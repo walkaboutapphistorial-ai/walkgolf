@@ -199,6 +199,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 @keyframes spin{to{transform:rotate(360deg)}}
 .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--g3);color:var(--txt);padding:10px 20px;border-radius:22px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
+.profile-avatar-img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:2px solid rgba(83,216,251,0.3)}
 </style>
 </head>
 <body>
@@ -235,8 +236,11 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
   <!-- PARTIDAS -->
   <div class="screen active" id="s-partidas">
     <div class="topbar">
-      <h1>⛳ Walk<span>Golf</span></h1>
-      <div class="topbar-user" id="topbar-user"></div>
+      <div style="display:flex;flex-direction:column;line-height:1">
+        <h1>⛳ Walk<span>Golf</span></h1>
+        <span style="font-size:9px;color:var(--txt2);letter-spacing:.5px;margin-top:1px;font-family:var(--fb)">by Alrod62</span>
+      </div>
+      <div class="topbar-user" id="topbar-user" onclick="showScreen('perfil')" style="cursor:pointer"></div>
     </div>
     <div class="search-wrap">
       <div class="search">
@@ -359,8 +363,11 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     <button class="nav-btn" id="nav-chat" onclick="showScreen('chat')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="nav-lbl">Chat</span><div class="nav-pip"></div>
-      <!-- FIX: badge de no leídos -->
       <div class="nav-badge" id="chat-nav-badge">0</div>
+    </button>
+    <button class="nav-btn" id="nav-perfil" onclick="showScreen('perfil')">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+      <span class="nav-lbl">Perfil</span><div class="nav-pip"></div>
     </button>
   </nav>
 
@@ -480,6 +487,97 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     </div>
   </div>
 
+  <!-- PERFIL (propio y ajeno) -->
+  <div class="screen" id="s-perfil">
+    <!-- topbar propio -->
+    <div class="topbar" id="perfil-topbar-own">
+      <h1>👤 Per<span>fil</span></h1>
+    </div>
+    <!-- topbar ajeno con flecha atrás -->
+    <div class="topbar" id="perfil-topbar-friend" style="display:none">
+      <button class="back-btn" style="padding:0" onclick="showScreen('amigos')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+        Amigos
+      </button>
+    </div>
+
+    <div style="padding:20px 16px 0">
+      <!-- Avatar -->
+      <div style="display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:20px">
+        <div id="avatar-click-wrap" style="position:relative;cursor:pointer" onclick="document.getElementById('avatar-file').click()">
+          <div id="profile-avatar-display" style="width:80px;height:80px;border-radius:50%;background:rgba(83,216,251,0.18);color:#53d8fb;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;font-family:var(--ff);overflow:hidden;border:2px solid rgba(83,216,251,0.3)"></div>
+          <div id="avatar-edit-icon" style="position:absolute;bottom:0;right:0;width:24px;height:24px;border-radius:50%;background:var(--acc2);color:#0a1628;display:flex;align-items:center;justify-content:center;font-size:13px">✏️</div>
+        </div>
+        <input type="file" id="avatar-file" accept="image/*" style="display:none" onchange="handleAvatarChange(this)">
+        <div style="text-align:center">
+          <div id="profile-display-name" style="font-family:var(--ff);font-size:20px;font-weight:800"></div>
+        </div>
+      </div>
+
+      <!-- Editar nombre (solo perfil propio) -->
+      <div id="perfil-edit-name" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
+        <div style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:12px">Nombre para mostrar</div>
+        <div style="display:flex;gap:8px">
+          <input id="profile-name-input" placeholder="Tu nombre" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:11px;padding:10px 13px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none">
+          <button onclick="saveProfileName()" style="background:var(--acc2);color:#0a1628;border:none;border-radius:11px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);white-space:nowrap">Guardar</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
+        <div id="stats-title" style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:14px">Mis estadísticas</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div style="background:rgba(83,216,251,0.07);border:1px solid rgba(83,216,251,0.15);border-radius:12px;padding:12px;text-align:center">
+            <div id="stat-partidas" style="font-family:var(--ff);font-size:26px;font-weight:800;color:var(--acc2)">0</div>
+            <div style="font-size:11px;color:var(--txt2);margin-top:3px">Partidas</div>
+          </div>
+          <div style="background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:12px;text-align:center">
+            <div id="stat-victorias" style="font-family:var(--ff);font-size:26px;font-weight:800;color:#ffd700">0</div>
+            <div style="font-size:11px;color:var(--txt2);margin-top:3px">Victorias</div>
+          </div>
+          <div style="background:rgba(123,237,159,0.07);border:1px solid rgba(123,237,159,0.15);border-radius:12px;padding:12px;text-align:center;grid-column:1/-1">
+            <div id="stat-mejor" style="font-family:var(--ff);font-size:22px;font-weight:800;color:var(--acc3)">—</div>
+            <div id="stat-mejor-map" style="font-size:10px;color:var(--txt2);margin-top:2px"></div>
+            <div style="font-size:11px;color:var(--txt2);margin-top:3px">Mejor score</div>
+          </div>
+          <div style="background:rgba(233,69,96,0.07);border:1px solid rgba(233,69,96,0.15);border-radius:12px;padding:12px;text-align:center">
+            <div id="stat-hio" style="font-family:var(--ff);font-size:26px;font-weight:800;color:var(--acc)">0</div>
+            <div style="font-size:11px;color:var(--txt2);margin-top:3px">Holes-in-1</div>
+          </div>
+          <div style="background:rgba(192,132,252,0.07);border:1px solid rgba(192,132,252,0.15);border-radius:12px;padding:12px;text-align:center">
+            <div id="stat-rival" style="font-family:var(--ff);font-size:14px;font-weight:800;color:#c084fc;line-height:1.2">—</div>
+            <div style="font-size:11px;color:var(--txt2);margin-top:3px">Rival favorito</div>
+          </div>
+        </div>
+        <!-- Mapa con más victorias — fila completa -->
+        <div style="background:rgba(255,215,0,0.07);border:1px solid rgba(255,215,0,0.15);border-radius:12px;padding:12px;text-align:center;margin-top:10px">
+          <div id="stat-best-map" style="font-family:var(--ff);font-size:14px;font-weight:800;color:#ffd700">—</div>
+          <div style="font-size:11px;color:var(--txt2);margin-top:3px">Mapa con más victorias</div>
+        </div>
+      </div>
+
+      <!-- Donar (solo perfil propio) -->
+      <div id="perfil-donar" style="background:linear-gradient(135deg,rgba(255,215,0,0.08),rgba(233,69,96,0.08));border:1px solid rgba(255,215,0,0.2);border-radius:16px;padding:16px;margin-bottom:12px;text-align:center">
+        <div style="font-size:13px;color:var(--txt2);margin-bottom:12px">¿Te gusta la app? Apoyá el proyecto 🙌</div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <a href="https://mpago.la/alrod62x.mp" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#009ee3;color:#fff;border-radius:13px;padding:11px 18px;font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+            MercadoPago
+          </a>
+          <a href="https://paypal.me/RodrigoPucheu" target="_blank" style="display:inline-flex;align-items:center;gap:7px;background:#003087;color:#fff;border-radius:13px;padding:11px 18px;font-family:var(--ff);font-size:13px;font-weight:700;cursor:pointer;text-decoration:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a3.35 3.35 0 0 0-.607-.541c-.013.076-.026.175-.041.26-.93 4.778-4.005 7.201-9.138 7.201h-2.19a.563.563 0 0 0-.556.479l-1.187 7.527h-.506l-.24 1.516a.56.56 0 0 0 .554.647h3.882c.46 0 .85-.334.922-.788.06-.26.76-4.852.816-5.09a.932.932 0 0 1 .923-.788h.58c3.76 0 6.705-1.528 7.565-5.946.36-1.847.174-3.388-.777-4.477z"/></svg>
+            PayPal
+          </a>
+        </div>
+      </div>
+
+      <!-- Cerrar sesión (solo perfil propio) -->
+      <button id="perfil-signout" onclick="window.doSignOut()" style="width:100%;background:rgba(233,69,96,0.08);border:1px solid rgba(233,69,96,0.2);color:var(--acc);border-radius:13px;padding:12px;font-family:var(--fb);font-size:14px;cursor:pointer;margin-bottom:20px">
+        Cerrar sesión
+      </button>
+    </div>
+  </div>
+
 </div><!-- end .app -->
 
 <div class="toast" id="toast"></div>
@@ -587,9 +685,8 @@ function enterApp(){
   document.getElementById('app').style.display='flex';
   document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
   const name=currentUser._profile?.name||currentUser.displayName||'Tú';
-  document.getElementById('topbar-user').innerHTML=`${av(name,0)}<span style="font-size:12px;color:var(--txt2)">${esc(name)}</span><button onclick="window.doSignOut()" style="background:none;border:none;color:var(--txt2);font-size:11px;cursor:pointer;margin-left:4px">Salir</button>`;
-  // FIX: loadFriends() llama loadGames() internamente cuando friends está listo.
-  // No llamamos loadGames() aquí para evitar que corra sin friends cargados.
+  document.getElementById('topbar-user').innerHTML=`${av(name,0)}<span style="font-size:12px;color:var(--txt2)">${esc(name)}</span>`;
+  document.getElementById('topbar-user').onclick=()=>showScreen('perfil');
   loadFriends();
   requestNotificationPermission();
 }
@@ -677,10 +774,10 @@ function renderFriendsList(){
   const el=document.getElementById('friends-list');
   if(!friends.length){el.innerHTML='<div class="empty">Aún no tienes amigos agregados</div>';return;}
   el.innerHTML=friends.map((f,i)=>`<div class="friend-row" data-name="${(f.name||'').toLowerCase()}" data-email="${(f.email||'').toLowerCase()}">
-    <div class="av-wrap">${av(f.name,i)}</div>
-    <div class="fi">
+    <div class="av-wrap" style="cursor:pointer" onclick="openFriendProfile('${f.uid}')">${f.avatarUrl?`<img src="${f.avatarUrl}" style="width:36px;height:36px;border-radius:50%;object-fit:cover">`:av(f.name,i)}</div>
+    <div class="fi" style="cursor:pointer" onclick="openFriendProfile('${f.uid}')">
       <div class="fname">${esc(f.name)}</div>
-      <div class="fsub">${esc(f.email||'')}</div>
+      <div class="fsub" style="font-size:11px;color:var(--acc2)">Ver perfil →</div>
     </div>
     <button class="faction" style="background:var(--card);color:var(--acc2);border:1px solid var(--border)" onclick="openChatWith('${f.uid}','${esc(f.name)}')">💬</button>
   </div>`).join('');
@@ -1234,6 +1331,140 @@ window.showScreen=function(name){
   document.getElementById('fab').style.display=name==='partidas'?'flex':'none';
   if(name==='chat')renderChatList();
   if(name==='amigos'){renderFriendsList();loadPendingRequests();}
+  if(name==='perfil')renderProfile(true);
+};
+
+// ── PERFIL ──
+let viewingFriendUid=null;
+
+function calcStats(name){
+  let partidas=0,victorias=0,mejorRel=null,mejorMapa='',totalHio=0;
+  const rivalWins={},mapWins={};
+  games.forEach(g=>{
+    const players=g.players||[];
+    const me=players.find(p=>p.name===name);
+    if(!me)return;
+    partidas++;
+    if(me.hio)totalHio+=Number(me.hio)||0;
+    const rel=Number(me.shots)-(g.par||0);
+    if(mejorRel===null||rel<mejorRel){mejorRel=rel;mejorMapa=g.map||'';}
+    const minShots=Math.min(...players.map(p=>Number(p.shots)||999));
+    const winners=players.filter(p=>Number(p.shots)===minShots);
+    if(winners.length===1&&winners[0].name===name){
+      victorias++;
+      mapWins[g.map||'?']=(mapWins[g.map||'?']||0)+1;
+      players.forEach(p=>{
+        if(p.name!==name)rivalWins[p.name]=(rivalWins[p.name]||0)+1;
+      });
+    }
+  });
+  const rival=Object.entries(rivalWins).sort((a,b)=>b[1]-a[1])[0];
+  const bestMap=Object.entries(mapWins).sort((a,b)=>b[1]-a[1])[0];
+  return{partidas,victorias,mejorRel,mejorMapa,totalHio,
+    rival:rival?`${rival[0]} (${rival[1]}v)`:'—',
+    bestMap:bestMap?`${bestMap[0]} (${bestMap[1]}v)`:'—'};
+}
+
+function renderStatsUI(s){
+  document.getElementById('stat-partidas').textContent=s.partidas;
+  document.getElementById('stat-victorias').textContent=s.victorias;
+  document.getElementById('stat-mejor').textContent=s.mejorRel===null?'—':(s.mejorRel>0?'+':'')+s.mejorRel;
+  document.getElementById('stat-mejor-map').textContent=s.mejorMapa?`en ${s.mejorMapa}`:'';
+  document.getElementById('stat-hio').textContent=s.totalHio;
+  document.getElementById('stat-rival').textContent=s.rival;
+  document.getElementById('stat-best-map').textContent=s.bestMap;
+}
+
+function renderProfile(isOwn=true, friendData=null){
+  if(!currentUser)return;
+  viewingFriendUid=isOwn?null:(friendData?.uid||null);
+
+  const name=isOwn
+    ?(currentUser._profile?.name||currentUser.displayName||'Tú')
+    :(friendData?.name||'?');
+  const avatarUrl=isOwn
+    ?(currentUser._profile?.avatarUrl||null)
+    :(friendData?.avatarUrl||null);
+
+  // Topbars
+  document.getElementById('perfil-topbar-own').style.display=isOwn?'flex':'none';
+  document.getElementById('perfil-topbar-friend').style.display=isOwn?'none':'flex';
+
+  // Elementos solo para perfil propio
+  document.getElementById('perfil-edit-name').style.display=isOwn?'block':'none';
+  document.getElementById('perfil-donar').style.display=isOwn?'block':'none';
+  document.getElementById('perfil-signout').style.display=isOwn?'block':'none';
+  document.getElementById('avatar-edit-icon').style.display=isOwn?'flex':'none';
+  document.getElementById('avatar-click-wrap').style.cursor=isOwn?'pointer':'default';
+  document.getElementById('avatar-click-wrap').onclick=isOwn?()=>document.getElementById('avatar-file').click():null;
+
+  // Título stats
+  document.getElementById('stats-title').textContent=isOwn?'Mis estadísticas':'Estadísticas';
+
+  document.getElementById('profile-display-name').textContent=name;
+  if(isOwn)document.getElementById('profile-name-input').value=name;
+
+  // Avatar
+  const avatarDiv=document.getElementById('profile-avatar-display');
+  if(avatarUrl){
+    avatarDiv.innerHTML=`<img src="${avatarUrl}" class="profile-avatar-img">`;
+  }else{
+    avatarDiv.innerHTML=`<span>${name.slice(0,2).toUpperCase()}</span>`;
+    avatarDiv.style.background='rgba(83,216,251,0.18)';
+    avatarDiv.style.color='#53d8fb';
+  }
+
+  renderStatsUI(calcStats(name));
+}
+
+window.openFriendProfile=async function(uid){
+  // Buscar en friends ya cargados
+  let fd=friends.find(f=>f.uid===uid);
+  if(!fd){
+    const snap=await getDoc(doc(db,'users',uid));
+    if(snap.exists())fd={uid,...snap.data()};
+  }
+  document.querySelectorAll('.screen,.detail-screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-perfil').classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
+  document.getElementById('nav-perfil').classList.add('active');
+  document.getElementById('fab').style.display='none';
+  renderProfile(false,fd);
+};
+
+window.saveProfileName=async function(){
+  const newName=document.getElementById('profile-name-input').value.trim();
+  if(!newName)return toast('Escribe un nombre');
+  try{
+    await updateDoc(doc(db,'users',currentUser.uid),{name:newName});
+    currentUser._profile={...currentUser._profile,name:newName};
+    document.getElementById('profile-display-name').textContent=newName;
+    const topName=document.getElementById('topbar-user');
+    topName.innerHTML=`${av(newName,0)}<span style="font-size:12px;color:var(--txt2)">${esc(newName)}</span>`;
+    toast('Nombre actualizado ✓');
+  }catch(e){toast('Error al guardar');}
+};
+
+window.handleAvatarChange=async function(input){
+  const file=input.files[0];
+  if(!file)return;
+  toast('Subiendo foto...');
+  try{
+    const formData=new FormData();
+    formData.append('file',file);
+    formData.append('upload_preset','Avatar-users');
+    formData.append('public_id','avatar_'+currentUser.uid);
+    const res=await fetch('https://api.cloudinary.com/v1_1/dweegu610/image/upload',{method:'POST',body:formData});
+    const data=await res.json();
+    const url=data.secure_url;
+    if(!url)throw new Error('Sin URL');
+    // Guardar URL en Firestore
+    await updateDoc(doc(db,'users',currentUser.uid),{avatarUrl:url});
+    currentUser._profile={...currentUser._profile,avatarUrl:url};
+    // Mostrar
+    document.getElementById('profile-avatar-display').innerHTML=`<img src="${url}" class="profile-avatar-img">`;
+    toast('Foto actualizada ✓');
+  }catch(e){toast('Error al subir la foto');}
 };
 
 window.openOverlay=function(id){document.getElementById(id).classList.add('open');};
