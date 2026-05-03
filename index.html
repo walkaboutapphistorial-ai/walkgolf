@@ -490,7 +490,7 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPas
   signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
-  onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, arrayUnion, limit, deleteDoc, writeBatch }
+  onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, arrayUnion, limit, deleteDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -588,7 +588,8 @@ function enterApp(){
   document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
   const name=currentUser._profile?.name||currentUser.displayName||'Tú';
   document.getElementById('topbar-user').innerHTML=`${av(name,0)}<span style="font-size:12px;color:var(--txt2)">${esc(name)}</span><button onclick="window.doSignOut()" style="background:none;border:none;color:var(--txt2);font-size:11px;cursor:pointer;margin-left:4px">Salir</button>`;
-  loadGames();
+  // FIX: loadFriends() llama loadGames() internamente cuando friends está listo.
+  // No llamamos loadGames() aquí para evitar que corra sin friends cargados.
   loadFriends();
   requestNotificationPermission();
 }
@@ -618,18 +619,29 @@ function sendPushNotification(title,body){
 // ── GAMES — carga partidas propias + de amigos ──
 function loadGames(){
   if(gamesUnsub)gamesUnsub();
-  const q=query(
-    collection(db,'games'),
-    where('participantUids','array-contains',currentUser.uid),
-    orderBy('date','desc')
-  );
-  gamesUnsub=onSnapshot(q,snap=>{
-    games=snap.docs.map(d=>({...d.data(),id:d.id}));
-    renderGames(games);
-    renderRanking();
-    renderWinners();
-    populateFriendSelect();
+  // UIDs a consultar: el propio + todos los amigos
+  const uids=[currentUser.uid,...friends.map(f=>f.uid)];
+  // Firestore soporta 'in' con hasta 30 valores
+  const chunks=[];
+  for(let i=0;i<uids.length;i+=30)chunks.push(uids.slice(i,i+30));
+  let allGames=[];
+  let pending=chunks.length;
+  const unsubs=[];
+  chunks.forEach(chunk=>{
+    const q=query(collection(db,'games'),where('uid','in',chunk),orderBy('date','desc'));
+    const u=onSnapshot(q,snap=>{
+      const chunkGames=snap.docs.map(d=>({...d.data(),id:d.id}));
+      // Reemplazar el segmento de este chunk en allGames
+      allGames=allGames.filter(g=>!chunk.includes(g.uid)).concat(chunkGames);
+      // Ordenar por fecha desc
+      allGames.sort((a,b)=>b.date.localeCompare(a.date));
+      games=[...allGames];
+      renderGames(games);renderRanking();renderWinners();populateFriendSelect();
+    });
+    unsubs.push(u);
   });
+  // Devolvemos una función que cancela todos los listeners
+  gamesUnsub=()=>unsubs.forEach(u=>u());
 }
 
 // ── FRIENDS — onSnapshot para actualizarse en tiempo real ──
@@ -640,12 +652,10 @@ function loadFriends(){
     const data=snap.data();
     friends=[];
     if(data?.friends?.length){
-      const friendDocs=await Promise.all(
-        data.friends.map(fid=>getDoc(doc(db,'users',fid)))
-      );
-      friends=friendDocs
-        .filter(fs=>fs.exists())
-        .map(fs=>({uid:fs.id,...fs.data()}));
+      for(const fid of data.friends){
+        const fs=await getDoc(doc(db,'users',fid));
+        if(fs.exists())friends.push({uid:fid,...fs.data()});
+      }
     }
     renderFriendsList();
     renderChatList();
@@ -660,7 +670,7 @@ function populateFriendSelect(){
   const sel=document.getElementById('d-player');
   const myName=currentUser._profile?.name||currentUser.displayName||'Yo';
   const opts=[{name:myName},...friends];
-  sel.innerHTML='<option value="">Seleccionar</option>'+opts.map(f=>`<option value="${f.uid||''}|${esc(f.name)}">${esc(f.name)}</option>`).join('');
+  sel.innerHTML='<option value="">Seleccionar</option>'+opts.map(f=>`<option>${esc(f.name)}</option>`).join('');
 }
 
 function renderFriendsList(){
@@ -720,15 +730,18 @@ function loadPendingRequests(){
 // FIX: acceptRequest ahora recibe también fromName, actualiza correctamente y recarga amigos
 window.acceptRequest=async function(reqId,fromUid,fromName){
   try{
-    const batch=writeBatch(db);
-    batch.update(doc(db,'friendRequests',reqId),{status:'accepted'});
-    batch.update(doc(db,'users',currentUser.uid),{friends:arrayUnion(fromUid)});
-    batch.update(doc(db,'users',fromUid),{friends:arrayUnion(currentUser.uid)});
-    await batch.commit();
+    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
+    await updateDoc(doc(db,'users',currentUser.uid),{friends:arrayUnion(fromUid)});
+    await updateDoc(doc(db,'users',fromUid),{friends:arrayUnion(currentUser.uid)});
+    // Quitar la fila visualmente de inmediato
     const row=document.getElementById('req-row-'+reqId);
     if(row)row.remove();
     toast(`¡${fromName} es ahora tu amigo! 🎉`);
     closeOverlay('o-pending');
+    // FIX: el onSnapshot de loadFriends detecta el cambio automáticamente
+    // porque ya hicimos updateDoc en users/{uid}. No hace falta llamar loadFriends().
+    // Pero forzamos también la recarga de partidas por si acaso:
+    setTimeout(()=>loadGames(),1000);
   }catch(e){
     console.error('Error aceptando solicitud:',e);
     toast('Error al aceptar. Intenta de nuevo.');
@@ -919,23 +932,13 @@ window.createGame=async function(){
   if(!par)return alert('Selecciona la dificultad para calcular el PAR');
   const[mapName]=mapVal.split('|');
   await addDoc(collection(db,'games'),{
-    uid:currentUser.uid,
-    participantUids:[currentUser.uid],
-    map:mapName,
-    par:parseInt(par),
+    uid:currentUser.uid,map:mapName,par:parseInt(par),
     type:document.getElementById('f-type').value||'Normal',
     diff:document.getElementById('f-diff').value||'Fácil',
     date:document.getElementById('f-date').value||new Date().toISOString().split('T')[0],
-    players:[{
-      uid:currentUser.uid,
-      name:currentUser._profile?.name||currentUser.displayName||'Yo',
-      shots:0,
-      hio:0
-    }],
-    createdAt:serverTimestamp()
+    players:[],createdAt:serverTimestamp()
   });
-  closeOverlay('o-new');
-  toast('Partida creada ⛳');
+  closeOverlay('o-new');toast('Partida creada ⛳');
 };
 
 // ── RANKING ──
