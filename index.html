@@ -596,6 +596,7 @@ function enterApp(){
 window.doSignOut=async function(){
   if(gamesUnsub)gamesUnsub();
   if(chatUnsub)chatUnsub();
+  if(friendsUnsub)friendsUnsub();
   Object.values(chatListeners).forEach(u=>u&&u());
   chatListeners={};
   await signOut(auth);
@@ -614,33 +615,54 @@ function sendPushNotification(title,body){
   }
 }
 
-// ── GAMES ──
+// ── GAMES — carga partidas propias + de amigos ──
 function loadGames(){
   if(gamesUnsub)gamesUnsub();
-  const q=query(collection(db,'games'),where('uid','==',currentUser.uid),orderBy('date','desc'));
-  gamesUnsub=onSnapshot(q,snap=>{
-    games=snap.docs.map(d=>({...d.data(),id:d.id}));
-    renderGames(games);renderRanking();renderWinners();populateFriendSelect();
+  // UIDs a consultar: el propio + todos los amigos
+  const uids=[currentUser.uid,...friends.map(f=>f.uid)];
+  // Firestore soporta 'in' con hasta 30 valores
+  const chunks=[];
+  for(let i=0;i<uids.length;i+=30)chunks.push(uids.slice(i,i+30));
+  let allGames=[];
+  let pending=chunks.length;
+  const unsubs=[];
+  chunks.forEach(chunk=>{
+    const q=query(collection(db,'games'),where('uid','in',chunk),orderBy('date','desc'));
+    const u=onSnapshot(q,snap=>{
+      const chunkGames=snap.docs.map(d=>({...d.data(),id:d.id}));
+      // Reemplazar el segmento de este chunk en allGames
+      allGames=allGames.filter(g=>!chunk.includes(g.uid)).concat(chunkGames);
+      // Ordenar por fecha desc
+      allGames.sort((a,b)=>b.date.localeCompare(a.date));
+      games=[...allGames];
+      renderGames(games);renderRanking();renderWinners();populateFriendSelect();
+    });
+    unsubs.push(u);
   });
+  // Devolvemos una función que cancela todos los listeners
+  gamesUnsub=()=>unsubs.forEach(u=>u());
 }
 
-// ── FRIENDS ──
-async function loadFriends(){
-  const snap=await getDoc(doc(db,'users',currentUser.uid));
-  const data=snap.data();
-  friends=[];
-  if(data?.friends?.length){
-    for(const fid of data.friends){
-      const fs=await getDoc(doc(db,'users',fid));
-      if(fs.exists())friends.push({uid:fid,...fs.data()});
+// ── FRIENDS — onSnapshot para actualizarse en tiempo real ──
+let friendsUnsub=null;
+function loadFriends(){
+  if(friendsUnsub)friendsUnsub();
+  friendsUnsub=onSnapshot(doc(db,'users',currentUser.uid),async snap=>{
+    const data=snap.data();
+    friends=[];
+    if(data?.friends?.length){
+      for(const fid of data.friends){
+        const fs=await getDoc(doc(db,'users',fid));
+        if(fs.exists())friends.push({uid:fid,...fs.data()});
+      }
     }
-  }
-  renderFriendsList();
-  renderChatList();
-  populateFriendSelect();
+    renderFriendsList();
+    renderChatList();
+    populateFriendSelect();
+    setupUnreadListeners();
+    loadGames();
+  });
   loadPendingRequests();
-  // FIX: escuchar mensajes no leídos de todos los amigos
-  setupUnreadListeners();
 }
 
 function populateFriendSelect(){
