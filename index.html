@@ -707,6 +707,15 @@ onAuthStateChanged(auth,async user=>{
 function enterApp(){
   document.getElementById('auth').classList.remove('active');
   document.getElementById('app').style.display='flex';
+  // Pre-popular cache con el usuario actual para que sus partidas antiguas (sin uid) se unifiquen
+  if(currentUser){
+    const myName=currentUser._profile?.name||currentUser.displayName||'';
+    if(myName){
+      uidNameCache[currentUser.uid]=myName;
+      // También indexar por nombre normalizado → uid, para unificar partidas sin uid
+      uidNameCache['__byname__'+(myName.trim().toLowerCase())]=currentUser.uid;
+    }
+  }
   document.getElementById('f-date').value=new Date().toISOString().split('T')[0];
   const name=currentUser._profile?.name||currentUser.displayName||'Tú';
   document.getElementById('topbar-user').innerHTML=`${av(name,0)}<span style="font-size:12px;color:var(--txt2)">${esc(name)}</span>`;
@@ -808,7 +817,14 @@ function loadGames(){
     const u=onSnapshot(q,async snap=>{
       const chunkGames=snap.docs.map(d=>({...d.data(),id:d.id}));
       allGames=allGames.filter(g=>!chunk.includes(g.uid)).concat(chunkGames);
-      allGames.sort((a,b)=>b.date.localeCompare(a.date));
+      allGames.sort((a,b)=>{
+        const dateDiff=b.date.localeCompare(a.date);
+        if(dateDiff!==0)return dateDiff;
+        // mismo día: la más reciente (createdAt) primero
+        const tA=a.createdAt?.seconds??a.createdAt?.toMillis?.()/1000??0;
+        const tB=b.createdAt?.seconds??b.createdAt?.toMillis?.()/1000??0;
+        return tB-tA;
+      });
       games=[...allGames];
       // Esperar a que TODOS los UIDs estén resueltos antes de renderizar
       await resolveAllPlayerUids(games);
@@ -842,8 +858,13 @@ function loadFriends(){
         const fs=await getDoc(doc(db,'users',fid));
         if(fs.exists())friends.push({uid:fid,...fs.data()});
       }
-      // Populate UID name cache from friends
-      friends.forEach(f=>{if(f.uid&&f.name)uidNameCache[f.uid]=f.name;});
+      // Populate UID name cache from friends (uid→name Y nombre→uid para unificar partidas antiguas)
+      friends.forEach(f=>{
+        if(f.uid&&f.name){
+          uidNameCache[f.uid]=f.name;
+          uidNameCache['__byname__'+(f.name.trim().toLowerCase())]=f.uid;
+        }
+      });
       renderFriendsList();
       renderChatList();
       populateFriendSelect();
@@ -998,27 +1019,35 @@ async function resolvePlayerName(uid){
   return uid;
 }
 
-// Resuelve el nombre a mostrar: si el jugador tiene uid, busca el nombre actual
+// Resuelve el nombre a mostrar
+// 1) Si tiene uid y está en caché → usa el nombre actual del caché
+// 2) Si tiene uid pero no caché → busca en friends
+// 3) Sin uid → busca por nombre normalizado en friends para obtener nombre actualizado
 function getPlayerDisplayName(p){
-  if(p.uid&&uidNameCache[p.uid])return uidNameCache[p.uid];
+  if(p.uid){
+    if(uidNameCache[p.uid])return uidNameCache[p.uid];
+    const f=friends.find(x=>x.uid===p.uid);
+    if(f)return f.name;
+    if(currentUser&&p.uid===currentUser.uid)return currentUser._profile?.name||currentUser.displayName||p.name||'Yo';
+  }
+  // Sin uid: intentar encontrar en friends por nombre
+  if(p.name){
+    const norm=p.name.trim().toLowerCase();
+    const f=friends.find(x=>(x.name||'').trim().toLowerCase()===norm);
+    if(f)return f.name;
+    // ¿Soy yo mismo?
+    const myName=(currentUser?._profile?.name||currentUser?.displayName||'').trim().toLowerCase();
+    if(myName&&norm===myName)return currentUser._profile?.name||currentUser.displayName||p.name;
+  }
   return p.name||p.uid||'?';
 }
 
 // ── GAMES LOGIC ──
 function getWinner(g){
   if(!g.players?.length)return null;
-  const best=g.players.reduce((a,b)=>{
-    if(a.shots<b.shots)return a;
-    if(b.shots<a.shots)return b;
-    // Empate de golpes: desempata por hoyos en 1 solo si alguno tiene más de 0
-    if((a.hio||0)>(b.hio||0))return a;
-    if((b.hio||0)>(a.hio||0))return b;
-    return null; // empate real, sin desempate posible
-  });
-  if(!best)return null;
-  // Verificar que nadie más empate con el ganador (en partidas de 3+ jugadores)
-  const tie=g.players.filter(p=>p!==best&&p.shots===best.shots&&(p.hio||0)===(best.hio||0));
-  return tie.length?null:best;
+  const minShots=Math.min(...g.players.map(p=>p.shots||999));
+  const leaders=g.players.filter(p=>p.shots===minShots);
+  return leaders.length===1?leaders[0]:null;
 }
 function samePlayer(a,b){return(a.uid&&b.uid&&a.uid===b.uid)||(a.name===b.name);}
 function diffBadge(d){if(d==='Fácil')return'b-easy';if(d==='Difícil')return'b-hard';return'b-normal';}
@@ -1194,8 +1223,17 @@ window.createGame=async function(){
 };
 
 // ── RANKING ──
-// Clave estable por jugador: UID si existe, sino nombre
-function playerKey(p){return p.uid||p.name||'?';}
+// Clave estable por jugador: UID si existe, sino nombre normalizado
+// Si el nombre normalizado tiene un uid asociado en caché, usar ese uid como clave
+// para unificar partidas antiguas (sin uid) con las nuevas (con uid)
+function playerKey(p){
+  if(p.uid)return p.uid;
+  const norm=(p.name||'?').trim().toLowerCase();
+  // Intenta resolver el uid desde el cache __byname__
+  const resolvedUid=uidNameCache['__byname__'+norm];
+  if(resolvedUid)return resolvedUid;
+  return norm;
+}
 
 function renderRanking(){
   // stats keyed por UID (o nombre si no hay UID)
