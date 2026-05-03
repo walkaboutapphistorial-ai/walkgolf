@@ -46,15 +46,23 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 .player-chips{display:flex;gap:5px;flex-wrap:wrap}
 .chip{font-size:11px;background:rgba(255,255,255,0.07);padding:3px 9px;border-radius:20px;color:var(--txt2)}
 .chip.winner{background:rgba(255,215,0,0.15);color:#ffd700}
+.game-card-top{display:flex;justify-content:space-between;align-items:flex-start}
+.btn-del-card{background:none;border:none;cursor:pointer;color:var(--txt2);opacity:.45;padding:2px 4px;border-radius:6px;transition:all .15s;flex-shrink:0}
+.btn-del-card:hover{opacity:1;color:var(--acc)}
+.btn-del-detail{display:flex;align-items:center;gap:6px;margin:10px 16px 4px;background:rgba(233,69,96,0.08);border:1px solid rgba(233,69,96,0.2);color:var(--acc);border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:var(--fb);width:calc(100% - 32px);transition:background .15s}
+.btn-del-detail:hover{background:rgba(233,69,96,0.15)}
 .sec-title{font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;padding:14px 16px 6px;font-weight:600}
 .navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(22,33,62,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:100}
-.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 8px;border-radius:10px;border:none;background:none;transition:all .15s}
+.nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 8px;border-radius:10px;border:none;background:none;transition:all .15s;position:relative}
 .nav-btn svg{opacity:.35;transition:opacity .2s}
 .nav-btn .nav-lbl{font-size:10px;color:var(--txt2);font-family:var(--fb)}
 .nav-btn.active svg{opacity:1;color:var(--acc2)}
 .nav-btn.active .nav-lbl{color:var(--acc2)}
 .nav-pip{width:4px;height:4px;border-radius:50%;background:transparent}
 .nav-btn.active .nav-pip{background:var(--acc2)}
+/* Badge de no leídos en nav */
+.nav-badge{position:absolute;top:0;right:4px;background:var(--acc);color:#fff;font-size:9px;font-weight:700;width:16px;height:16px;border-radius:50%;display:none;align-items:center;justify-content:center;font-family:var(--ff)}
+.nav-badge.show{display:flex}
 .overlay{position:fixed;inset:0;background:rgba(0,0,0,0.72);z-index:200;display:none;align-items:flex-end;max-width:420px;left:50%;transform:translateX(-50%)}
 .overlay.open{display:flex}
 .modal{background:var(--g2);border-radius:22px 22px 0 0;padding:20px 16px 32px;width:100%;max-height:88vh;overflow-y:auto}
@@ -93,6 +101,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 .gold{color:#ffd700}.silver{color:#c0c0c0}.bronze{color:#cd7f32}
 .prow{display:flex;align-items:center;gap:9px}
 .sval{text-align:right;font-size:14px;font-weight:500}
+/* H2H */
 .h2h-select{display:flex;align-items:center;gap:10px;padding:10px 16px 4px}
 .h2h-select select{flex:1;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:10px 12px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none}
 .h2h-select select option{background:var(--g2)}
@@ -106,8 +115,8 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 .h2h-bar-wrap{margin-top:4px}
 .h2h-bar-lbl{display:flex;justify-content:space-between;font-size:11px;color:var(--txt2);margin-bottom:5px}
 .h2h-bar{height:6px;border-radius:3px;background:rgba(255,255,255,0.08);overflow:hidden;display:flex}
-.h2h-bar-a{height:100%;background:var(--acc2);border-radius:3px 0 0 3px;transition:width .4s}
-.h2h-bar-b{height:100%;background:var(--acc);border-radius:0 3px 3px 0;transition:width .4s}
+.h2h-bar-a{height:100%;border-radius:3px 0 0 3px;transition:width .4s}
+.h2h-bar-b{height:100%;border-radius:0 3px 3px 0;transition:width .4s}
 .h2h-map-row{display:grid;grid-template-columns:1fr 36px 36px 36px;align-items:center;padding:11px 14px;border-bottom:1px solid var(--border);gap:6px}
 .h2h-map-row:last-child{border-bottom:none}
 .h2h-map-row.hdr{background:rgba(83,216,251,0.06);font-size:10px;color:var(--txt2);padding:8px 14px}
@@ -116,10 +125,12 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 .h2h-cell.win{color:var(--acc3)}.h2h-cell.lose{color:var(--acc)}.h2h-cell.draw{color:var(--txt2)}
 .h2h-played{text-align:center;font-size:12px;color:var(--txt2)}
 .h2h-empty{text-align:center;padding:24px;color:var(--txt2);font-size:13px}
+/* WINNERS */
 .wcard{margin:0 16px 8px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;display:flex;justify-content:space-between;align-items:center}
 .wmap{font-family:var(--ff);font-size:14px;font-weight:700}
 .wplayer{font-size:12px;color:var(--txt2);margin-top:3px}
 .wins-badge{background:rgba(255,215,0,0.12);color:#ffd700;padding:5px 12px;border-radius:20px;font-size:14px;font-weight:700;font-family:var(--ff)}
+/* FRIENDS */
 .friend-row{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border)}
 .friend-row:last-child{border-bottom:none}
 .fi{flex:1}
@@ -132,22 +143,39 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 .tabs{display:flex;margin:10px 16px;background:var(--card);border-radius:10px;padding:3px}
 .tab{flex:1;text-align:center;padding:7px;border-radius:8px;font-size:12px;cursor:pointer;color:var(--txt2);transition:all .18s;border:none;background:none;font-family:var(--fb)}
 .tab.active{background:var(--g3);color:var(--txt);font-weight:500}
-/* CHAT */
-.chat-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+/* CHAT LIST */
+.chat-item{display:flex;align-items:center;gap:12px;padding:14px 16px;border-bottom:1px solid var(--border);cursor:pointer;position:relative}
 .chat-item:last-child{border-bottom:none}
 .cinfo{flex:1;min-width:0}
 .cname{font-size:14px;font-weight:500}
 .cprev{font-size:12px;color:var(--txt2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.ctime{font-size:11px;color:var(--txt2);flex-shrink:0}
-/* CHAT WINDOW */
-.chat-window{display:flex;flex-direction:column;height:100%}
-.chat-msgs{flex:1;overflow-y:auto;padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.cprev.unread{color:var(--txt);font-weight:500}
+.ctime{font-size:11px;color:var(--txt2);flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.unread-dot{width:8px;height:8px;border-radius:50%;background:var(--acc2);display:none}
+.unread-dot.show{display:block}
+/* CHAT WINDOW — FIX: usa height fijo y flex para que el input no se pierda */
+.chat-win-wrap{
+  display:flex;flex-direction:column;
+  height:calc(100vh - 120px); /* topbar + navbar */
+  overflow:hidden;
+}
+.chat-msgs{
+  flex:1;overflow-y:auto;
+  padding:12px 16px;
+  display:flex;flex-direction:column;gap:8px;
+}
 .msg{max-width:75%;padding:9px 13px;border-radius:16px;font-size:14px;line-height:1.4}
 .msg.mine{background:var(--acc2);color:#0a1628;align-self:flex-end;border-radius:16px 16px 4px 16px}
 .msg.theirs{background:var(--card);border:1px solid var(--border);align-self:flex-start;border-radius:16px 16px 16px 4px}
 .msg-name{font-size:10px;color:var(--txt2);margin-bottom:3px}
 .msg-time{font-size:10px;opacity:.6;margin-top:3px;text-align:right}
-.chat-input-wrap{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;background:var(--g)}
+.chat-input-wrap{
+  padding:10px 16px 14px;
+  border-top:1px solid var(--border);
+  display:flex;gap:8px;
+  background:var(--g);
+  flex-shrink:0; /* nunca se encoge */
+}
 .chat-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:22px;padding:10px 16px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none}
 .chat-send{background:var(--acc2);color:#0a1628;border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 /* AVATAR */
@@ -175,13 +203,11 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 </head>
 <body>
 
-<!-- LOADING -->
 <div class="loading" id="loading">
   <div class="spinner"></div>
   <div style="font-size:13px;color:var(--txt2)">Cargando...</div>
 </div>
 
-<!-- AUTH -->
 <div class="auth-screen" id="auth">
   <div class="auth-logo">Walk<span>Golf</span></div>
   <div class="auth-sub">Registra tus partidas de<br>Walkabout Mini Golf</div>
@@ -204,7 +230,6 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
   <div id="auth-err" style="color:var(--acc);font-size:12px;margin-top:8px;text-align:center"></div>
 </div>
 
-<!-- APP -->
 <div class="app" id="app" style="display:none">
 
   <!-- PARTIDAS -->
@@ -222,7 +247,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     <div class="games-list" id="games-list"></div>
   </div>
 
-  <!-- DETAIL -->
+  <!-- DETAIL PARTIDA -->
   <div class="detail-screen" id="s-detail">
     <button class="back-btn" onclick="goBack()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
@@ -234,13 +259,15 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     </div>
     <div id="d-banner"></div>
     <div class="scores-card" id="d-scores"></div>
+    <button class="btn-del-detail" onclick="confirmDeleteGame(null,currentGameId)">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      Eliminar esta partida
+    </button>
     <div class="add-form">
       <h3>+ Agregar jugador</h3>
       <div class="inline-grid">
         <div class="field"><label>Jugador</label>
-          <select id="d-player">
-            <option value="">Seleccionar</option>
-          </select>
+          <select id="d-player"><option value="">Seleccionar</option></select>
         </div>
         <div class="field"><label>Golpes</label><input type="number" id="d-shots" placeholder="45" min="18" max="99"></div>
         <div class="field"><label>H-en-1</label><input type="number" id="d-hio" placeholder="0" min="0" max="18"></div>
@@ -280,7 +307,8 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     <div class="search-wrap">
       <div class="search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input placeholder="Buscar amigo..." oninput="filterFriends(this.value)">
+        <!-- FIX: busca por nombre Y email, sin distinción de mayúsculas -->
+        <input placeholder="Buscar por nombre o email..." oninput="filterFriends(this.value)">
       </div>
     </div>
     <div id="pending-btn-wrap"></div>
@@ -295,13 +323,13 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     <div id="chat-list"></div>
   </div>
 
-  <!-- CHAT WINDOW -->
-  <div class="detail-screen" id="s-chatwin">
-    <button class="back-btn" onclick="showScreen('chat')">
+  <!-- CHAT WINDOW — FIX: estructura flex correcta -->
+  <div class="detail-screen" id="s-chatwin" style="display:none;flex-direction:column;padding-bottom:0">
+    <button class="back-btn" onclick="closeChatWindow()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
       <span id="chatwin-name">Chat</span>
     </button>
-    <div class="chat-window">
+    <div class="chat-win-wrap">
       <div class="chat-msgs" id="chat-msgs"></div>
       <div class="chat-input-wrap">
         <input class="chat-input" id="chat-input" placeholder="Escribe un mensaje..." onkeydown="if(event.key==='Enter')sendMsg()">
@@ -331,6 +359,8 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     <button class="nav-btn" id="nav-chat" onclick="showScreen('chat')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       <span class="nav-lbl">Chat</span><div class="nav-pip"></div>
+      <!-- FIX: badge de no leídos -->
+      <div class="nav-badge" id="chat-nav-badge">0</div>
     </button>
   </nav>
 
@@ -407,16 +437,13 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
       <div class="field"><label>Tipo de mapa</label>
         <select id="f-type">
           <option value="">Seleccionar...</option>
-          <option>Normal</option>
-          <option>Gigante</option>
-          <option>Mini</option>
+          <option>Normal</option><option>Gigante</option><option>Mini</option>
         </select>
       </div>
       <div class="field"><label>Dificultad</label>
         <select id="f-diff" onchange="updatePar()">
           <option value="">Seleccionar...</option>
-          <option>Fácil</option>
-          <option>Difícil</option>
+          <option>Fácil</option><option>Difícil</option>
         </select>
       </div>
       <div class="field">
@@ -457,14 +484,13 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 
 <div class="toast" id="toast"></div>
 
-<!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword,
   signInWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getFirestore, collection, doc, addDoc, setDoc, getDoc, getDocs,
-  onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, arrayUnion, arrayRemove }
+  onSnapshot, query, where, orderBy, serverTimestamp, updateDoc, arrayUnion, limit, deleteDoc }
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -480,11 +506,12 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ── Estado global ──
 const AC=['rgba(83,216,251,0.18)','rgba(233,69,96,0.18)','rgba(123,237,159,0.18)','rgba(255,215,0,0.14)','rgba(192,132,252,0.18)','rgba(255,107,157,0.18)'];
 const AT=['#53d8fb','#e94560','#7bed9f','#ffd700','#c084fc','#ff6b9d'];
-let currentUser=null, games=[], friends=[], currentGameId=null, currentChatFriendId=null, chatUnsub=null, gamesUnsub=null;
+let currentUser=null, games=[], friends=[], currentGameId=null, currentChatFriendId=null;
+let chatUnsub=null, gamesUnsub=null, chatListeners={};
 let isRegister=false;
+let totalUnread=0;
 
 function av(name,i){const c=i%6;return`<div class="av" style="background:${AC[c]};color:${AT[c]}">${(name||'?').slice(0,2).toUpperCase()}</div>`;}
 function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML;}
@@ -494,16 +521,14 @@ function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t
 window.toggleRegister=function(){
   isRegister=!isRegister;
   document.getElementById('auth-name-wrap').style.display=isRegister?'block':'none';
-  document.querySelector('#auth-toggle span').textContent=isRegister?'Iniciar sesión':'Regístrate';
-  document.querySelector('#auth-toggle').innerHTML=isRegister
+  document.getElementById('auth-toggle').innerHTML=isRegister
     ?'¿Ya tienes cuenta? <span style="color:var(--acc2)" onclick="toggleRegister()">Iniciar sesión</span>'
     :'¿No tienes cuenta? <span style="color:var(--acc2)" onclick="toggleRegister()">Regístrate</span>';
 };
 
 window.loginGoogle=async function(){
   try{
-    const provider=new GoogleAuthProvider();
-    const result=await signInWithPopup(auth,provider);
+    const result=await signInWithPopup(auth,new GoogleAuthProvider());
     await ensureUserProfile(result.user);
   }catch(e){showAuthErr(e.message);}
 };
@@ -523,7 +548,7 @@ window.loginEmail=async function(){
       await signInWithEmailAndPassword(auth,email,pass);
     }
   }catch(e){
-    const msgs={'auth/email-already-in-use':'El email ya está registrado','auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Usuario no encontrado','auth/weak-password':'La contraseña debe tener al menos 6 caracteres','auth/invalid-email':'Email inválido'};
+    const msgs={'auth/email-already-in-use':'El email ya está registrado','auth/wrong-password':'Contraseña incorrecta','auth/user-not-found':'Usuario no encontrado','auth/weak-password':'La contraseña debe tener al menos 6 caracteres','auth/invalid-email':'Email inválido','auth/invalid-credential':'Email o contraseña incorrectos'};
     showAuthErr(msgs[e.code]||e.message);
   }
 };
@@ -544,13 +569,12 @@ async function ensureUserProfile(user,displayName){
   }
 }
 
-// ── AUTH STATE ──
 onAuthStateChanged(auth,async user=>{
   document.getElementById('loading').style.display='none';
   if(user){
     currentUser=user;
     const snap=await getDoc(doc(db,'users',user.uid));
-    if(snap.exists()) currentUser._profile=snap.data();
+    if(snap.exists())currentUser._profile=snap.data();
     enterApp();
   }else{
     document.getElementById('auth').classList.add('active');
@@ -558,7 +582,6 @@ onAuthStateChanged(auth,async user=>{
   }
 });
 
-// ── ENTER APP ──
 function enterApp(){
   document.getElementById('auth').classList.remove('active');
   document.getElementById('app').style.display='flex';
@@ -567,25 +590,37 @@ function enterApp(){
   document.getElementById('topbar-user').innerHTML=`${av(name,0)}<span style="font-size:12px;color:var(--txt2)">${esc(name)}</span><button onclick="window.doSignOut()" style="background:none;border:none;color:var(--txt2);font-size:11px;cursor:pointer;margin-left:4px">Salir</button>`;
   loadGames();
   loadFriends();
-  renderChatList();
+  requestNotificationPermission();
 }
 
 window.doSignOut=async function(){
   if(gamesUnsub)gamesUnsub();
   if(chatUnsub)chatUnsub();
+  Object.values(chatListeners).forEach(u=>u&&u());
+  chatListeners={};
   await signOut(auth);
 };
 
-// ── GAMES (solo del usuario) ──
+// ── NOTIFICACIONES PUSH ──
+function requestNotificationPermission(){
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+
+function sendPushNotification(title,body){
+  if('Notification' in window && Notification.permission==='granted'){
+    new Notification(title,{body,icon:'https://emojicdn.elk.sh/⛳'});
+  }
+}
+
+// ── GAMES ──
 function loadGames(){
   if(gamesUnsub)gamesUnsub();
   const q=query(collection(db,'games'),where('uid','==',currentUser.uid),orderBy('date','desc'));
   gamesUnsub=onSnapshot(q,snap=>{
     games=snap.docs.map(d=>({...d.data(),id:d.id}));
-    renderGames(games);
-    renderRanking();
-    renderWinners();
-    populateFriendSelect();
+    renderGames(games);renderRanking();renderWinners();populateFriendSelect();
   });
 }
 
@@ -604,6 +639,8 @@ async function loadFriends(){
   renderChatList();
   populateFriendSelect();
   loadPendingRequests();
+  // FIX: escuchar mensajes no leídos de todos los amigos
+  setupUnreadListeners();
 }
 
 function populateFriendSelect(){
@@ -616,66 +653,105 @@ function populateFriendSelect(){
 function renderFriendsList(){
   const el=document.getElementById('friends-list');
   if(!friends.length){el.innerHTML='<div class="empty">Aún no tienes amigos agregados</div>';return;}
-  el.innerHTML=friends.map((f,i)=>`<div class="friend-row">
+  el.innerHTML=friends.map((f,i)=>`<div class="friend-row" data-name="${(f.name||'').toLowerCase()}" data-email="${(f.email||'').toLowerCase()}">
     <div class="av-wrap">${av(f.name,i)}</div>
-    <div class="fi"><div class="fname">${esc(f.name)}</div><div class="fsub">${esc(f.email||'')}</div></div>
+    <div class="fi">
+      <div class="fname">${esc(f.name)}</div>
+      <div class="fsub">${esc(f.email||'')}</div>
+    </div>
     <button class="faction" style="background:var(--card);color:var(--acc2);border:1px solid var(--border)" onclick="openChatWith('${f.uid}','${esc(f.name)}')">💬</button>
   </div>`).join('');
 }
 
+// FIX: búsqueda sin distinción mayúsculas/minúsculas y por email también
 window.filterFriends=function(v){
+  const val=v.toLowerCase();
   document.querySelectorAll('#friends-list .friend-row').forEach(r=>{
-    r.style.display=r.textContent.toLowerCase().includes(v.toLowerCase())?'':'none';
+    const matchName=(r.dataset.name||'').includes(val);
+    const matchEmail=(r.dataset.email||'').includes(val);
+    r.style.display=(matchName||matchEmail)?'':'none';
   });
 };
 
-async function loadPendingRequests(){
-  const snap=await getDocs(query(collection(db,'friendRequests'),where('to','==',currentUser.uid),where('status','==','pending')));
-  const pending=snap.docs.map(d=>({id:d.id,...d.data()}));
-  const btn=document.getElementById('pending-btn-wrap');
-  if(pending.length){
-    btn.innerHTML=`<button class="req-btn" onclick="openOverlay('o-pending')">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-      Solicitudes pendientes (${pending.length})
-    </button>`;
-    document.getElementById('pending-list').innerHTML=pending.map(p=>`<div class="friend-row">
-      <div class="av-wrap">${av(p.fromName,0)}</div>
-      <div class="fi"><div class="fname">${esc(p.fromName)}</div></div>
-      <button class="faction btn-accept" onclick="acceptRequest('${p.id}','${p.from}')">Aceptar</button>
-    </div>`).join('');
-  }else{btn.innerHTML='';}
+// FIX: loadPendingRequests con listener en tiempo real para que el botón Aceptar funcione
+function loadPendingRequests(){
+  const q=query(collection(db,'friendRequests'),where('to','==',currentUser.uid),where('status','==','pending'));
+  onSnapshot(q,snap=>{
+    const pending=snap.docs.map(d=>({id:d.id,...d.data()}));
+    const btn=document.getElementById('pending-btn-wrap');
+    if(pending.length){
+      btn.innerHTML=`<button class="req-btn" onclick="openOverlay('o-pending')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Solicitudes pendientes (${pending.length})
+      </button>`;
+      // FIX: guardamos los datos en el modal para que el botón Aceptar los tenga disponibles
+      document.getElementById('pending-list').innerHTML=pending.map(p=>`
+        <div class="friend-row" id="req-row-${p.id}">
+          <div class="av-wrap">${av(p.fromName||'?',0)}</div>
+          <div class="fi">
+            <div class="fname">${esc(p.fromName||'Desconocido')}</div>
+            <div class="fsub">Quiere ser tu amigo</div>
+          </div>
+          <button class="faction btn-accept"
+            onclick="acceptRequest('${p.id}','${p.from}','${esc(p.fromName||'')}')">
+            Aceptar
+          </button>
+        </div>`).join('');
+    }else{
+      btn.innerHTML='';
+      document.getElementById('pending-list').innerHTML='<div class="empty" style="padding:20px">No hay solicitudes pendientes</div>';
+    }
+  });
 }
 
-window.acceptRequest=async function(reqId,fromUid){
-  await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
-  await updateDoc(doc(db,'users',currentUser.uid),{friends:arrayUnion(fromUid)});
-  await updateDoc(doc(db,'users',fromUid),{friends:arrayUnion(currentUser.uid)});
-  toast('¡Amigo agregado!');
-  closeOverlay('o-pending');
-  loadFriends();
+// FIX: acceptRequest ahora recibe también fromName, actualiza correctamente y recarga amigos
+window.acceptRequest=async function(reqId,fromUid,fromName){
+  try{
+    await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
+    await updateDoc(doc(db,'users',currentUser.uid),{friends:arrayUnion(fromUid)});
+    await updateDoc(doc(db,'users',fromUid),{friends:arrayUnion(currentUser.uid)});
+    // Quitar la fila visualmente de inmediato
+    const row=document.getElementById('req-row-'+reqId);
+    if(row)row.remove();
+    toast(`¡${fromName} es ahora tu amigo! 🎉`);
+    closeOverlay('o-pending');
+    await loadFriends();
+  }catch(e){
+    console.error('Error aceptando solicitud:',e);
+    toast('Error al aceptar. Intenta de nuevo.');
+  }
 };
 
 window.searchUser=async function(){
   const val=document.getElementById('add-friend-input').value.trim();
   const el=document.getElementById('search-result');
   if(!val)return;
-  const snap=await getDocs(query(collection(db,'users'),where('name','==',val)));
-  if(snap.empty){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center">No se encontró ese usuario</div>';return;}
+  // Buscar por nombre
+  let snap=await getDocs(query(collection(db,'users'),where('name','==',val)));
+  // Si no encuentra por nombre, buscar por email
+  if(snap.empty){
+    snap=await getDocs(query(collection(db,'users'),where('email','==',val.toLowerCase())));
+  }
+  if(snap.empty){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center;padding:12px">No se encontró ese usuario</div>';return;}
   const found=snap.docs[0];
-  if(found.id===currentUser.uid){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center">Ese eres tú 😄</div>';return;}
+  if(found.id===currentUser.uid){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center;padding:12px">Ese eres tú 😄</div>';return;}
   const fd=found.data();
   el.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;display:flex;align-items:center;gap:10px">
     ${av(fd.name,0)}
-    <div><div style="font-size:14px;font-weight:500">${esc(fd.name)}</div></div>
+    <div><div style="font-size:14px;font-weight:500">${esc(fd.name)}</div><div style="font-size:12px;color:var(--txt2)">${esc(fd.email||'')}</div></div>
     <button class="faction btn-accept" style="margin-left:auto" onclick="sendRequest('${found.id}','${esc(fd.name)}')">Enviar</button>
   </div>`;
 };
 
 window.sendRequest=async function(toUid,toName){
   const myName=currentUser._profile?.name||currentUser.displayName||'Alguien';
+  // Verificar si ya hay solicitud pendiente
+  const existing=await getDocs(query(collection(db,'friendRequests'),
+    where('from','==',currentUser.uid),where('to','==',toUid),where('status','==','pending')));
+  if(!existing.empty){toast('Ya enviaste una solicitud a este usuario');return;}
   await addDoc(collection(db,'friendRequests'),{
-    from:currentUser.uid, fromName:myName,
-    to:toUid, toName, status:'pending', createdAt:serverTimestamp()
+    from:currentUser.uid,fromName:myName,
+    to:toUid,toName,status:'pending',createdAt:serverTimestamp()
   });
   toast('¡Solicitud enviada!');
   closeOverlay('o-add');
@@ -693,15 +769,20 @@ function renderGames(list){
   if(!list.length){el.innerHTML='<div class="empty">No hay partidas aún.<br>Toca + para crear una</div>';return;}
   el.innerHTML=list.map(g=>{
     const w=getWinner(g);
-    return`<div class="game-card" onclick="openDetail('${g.id}')">
-      <div class="map-name">${esc(g.map)}</div>
-      <div class="meta-row">
+    return`<div class="game-card">
+      <div class="game-card-top">
+        <div class="map-name" onclick="openDetail('${g.id}')" style="flex:1;cursor:pointer">${esc(g.map)}</div>
+        <button class="btn-del-card" onclick="confirmDeleteGame(event,'${g.id}','${esc(g.map)}')" title="Eliminar partida">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+        </button>
+      </div>
+      <div class="meta-row" onclick="openDetail('${g.id}')" style="cursor:pointer">
         <span class="date-txt">${g.date}</span>
         <span class="badge ${typeBadge(g.type)}">${esc(g.type)}</span>
         <span class="badge ${diffBadge(g.diff)}">${esc(g.diff)}</span>
         <span class="badge" style="background:rgba(255,255,255,0.07);color:var(--txt2)">PAR ${g.par}</span>
       </div>
-      <div class="player-chips">
+      <div class="player-chips" onclick="openDetail('${g.id}')" style="cursor:pointer">
         ${g.players?.length?g.players.map(p=>`<span class="chip${w&&p.name===w.name?' winner':''}">${esc(p.name)}${w&&p.name===w.name?' 🏆':''}</span>`).join(''):'<span class="chip">Sin jugadores aún</span>'}
       </div>
     </div>`;
@@ -710,8 +791,10 @@ function renderGames(list){
 
 window.filterGames=function(v){renderGames(games.filter(g=>g.map.toLowerCase().includes(v.toLowerCase())));}
 
+window.currentGameId=null;
 window.openDetail=function(id){
   currentGameId=id;
+  window.currentGameId=id;
   const g=games.find(x=>x.id===id);
   document.getElementById('d-title').textContent=g.map;
   document.getElementById('d-meta').textContent=`${g.date} · ${g.type} · ${g.diff} · PAR ${g.par}`;
@@ -758,8 +841,46 @@ window.addPlayer=async function(){
   const updated={...g,players};
   const idx=games.findIndex(x=>x.id===currentGameId);
   if(idx>=0)games[idx]=updated;
-  refreshDetail(updated);
-  renderRanking();renderWinners();
+  refreshDetail(updated);renderRanking();renderWinners();
+};
+
+window.confirmDeleteGame=async function(event,gameId,mapName){
+  if(event)event.stopPropagation(); // evita abrir el detalle al tocar el icono
+  const g=games.find(x=>x.id===gameId);
+  const name=mapName||g?.map||'esta partida';
+  // Overlay de confirmación
+  const existing=document.getElementById('o-confirm-del');
+  if(existing)existing.remove();
+  const overlay=document.createElement('div');
+  overlay.id='o-confirm-del';
+  overlay.className='overlay open';
+  overlay.innerHTML=`<div class="modal">
+    <div class="handle"></div>
+    <div style="text-align:center;padding:8px 0 4px">
+      <div style="font-size:32px;margin-bottom:10px">🗑️</div>
+      <div style="font-family:var(--ff);font-size:17px;font-weight:700;margin-bottom:8px">Eliminar partida</div>
+      <div style="font-size:13px;color:var(--txt2);margin-bottom:20px">¿Eliminar <strong style="color:var(--txt)">${name}</strong>?<br>Esta acción no se puede deshacer.</div>
+    </div>
+    <button class="btn-primary" style="background:var(--acc)" onclick="deleteGame('${gameId}')">Sí, eliminar</button>
+    <button class="btn-sec" onclick="document.getElementById('o-confirm-del').remove()">Cancelar</button>
+  </div>`;
+  overlay.addEventListener('click',e=>{if(e.target===overlay)overlay.remove();});
+  document.getElementById('app').appendChild(overlay);
+};
+
+window.deleteGame=async function(gameId){
+  try{
+    await deleteDoc(doc(db,'games',gameId));
+    document.getElementById('o-confirm-del')?.remove();
+    // Si estamos en el detalle de esa partida, volver a la lista
+    if(currentGameId===gameId){
+      goBack();
+    }
+    toast('Partida eliminada');
+  }catch(e){
+    console.error(e);
+    toast('Error al eliminar. Intenta de nuevo.');
+  }
 };
 
 window.goBack=function(){
@@ -769,7 +890,6 @@ window.goBack=function(){
   document.getElementById('nav-partidas').classList.add('active');
 };
 
-// ── PAR AUTO-CALC ──
 window.updatePar=function(){
   const mapVal=document.getElementById('f-map').value;
   const diff=document.getElementById('f-diff').value;
@@ -786,17 +906,13 @@ window.createGame=async function(){
   if(!par)return alert('Selecciona la dificultad para calcular el PAR');
   const[mapName]=mapVal.split('|');
   await addDoc(collection(db,'games'),{
-    uid:currentUser.uid,
-    map:mapName,
-    par:parseInt(par),
+    uid:currentUser.uid,map:mapName,par:parseInt(par),
     type:document.getElementById('f-type').value||'Normal',
     diff:document.getElementById('f-diff').value||'Fácil',
     date:document.getElementById('f-date').value||new Date().toISOString().split('T')[0],
-    players:[],
-    createdAt:serverTimestamp()
+    players:[],createdAt:serverTimestamp()
   });
-  closeOverlay('o-new');
-  toast('Partida creada');
+  closeOverlay('o-new');toast('Partida creada ⛳');
 };
 
 // ── RANKING ──
@@ -860,11 +976,12 @@ function getAllPlayers(){const set=new Set();games.forEach(g=>(g.players||[]).fo
 
 window.openH2H=function(preselect){
   const players=getAllPlayers();
+  if(players.length<2){toast('Necesitas al menos 2 jugadores con partidas');return;}
   const selA=document.getElementById('h2h-a'),selB=document.getElementById('h2h-b');
   selA.innerHTML=players.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
   selB.innerHTML=players.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');
   if(preselect&&players.includes(preselect))selA.value=preselect;
-  if(players.length>1)selB.value=preselect?players.find(p=>p!==preselect):players[1];
+  if(players.length>1)selB.value=preselect?players.find(p=>p!==preselect)||players[1]:players[1];
   renderH2H();
   document.querySelectorAll('.screen,.detail-screen').forEach(s=>s.classList.remove('active'));
   document.getElementById('s-historial').classList.add('active');
@@ -937,15 +1054,77 @@ window.renderH2H=function(){
   </div>`:'<div class="h2h-empty">No han jugado juntos aún</div>'}`;
 };
 
-// ── CHAT ──
+// ── CHAT: no leídos ──
+// Guardamos el timestamp del último mensaje leído por conversación
+const lastRead={};
+
 function getChatId(uidA,uidB){return[uidA,uidB].sort().join('_');}
+
+// FIX: escucha el último mensaje de cada chat para detectar no leídos
+function setupUnreadListeners(){
+  // Limpiar listeners anteriores
+  Object.values(chatListeners).forEach(u=>u&&u());
+  chatListeners={};
+  totalUnread=0;
+
+  friends.forEach(f=>{
+    const chatId=getChatId(currentUser.uid,f.uid);
+    const q=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','desc'),limit(1));
+    chatListeners[chatId]=onSnapshot(q,snap=>{
+      if(snap.empty)return;
+      const lastMsg=snap.docs[0].data();
+      const isFromOther=lastMsg.uid!==currentUser.uid;
+      const msgTime=lastMsg.createdAt?.seconds||0;
+      const readTime=lastRead[chatId]||0;
+      const isUnread=isFromOther&&msgTime>readTime;
+
+      // Actualizar badge en lista de chats
+      const dotEl=document.getElementById(`unread-${f.uid}`);
+      const prevEl=document.getElementById(`prev-${f.uid}`);
+      if(dotEl)dotEl.classList.toggle('show',isUnread);
+      if(prevEl){
+        prevEl.textContent=lastMsg.text||'Mensaje nuevo';
+        prevEl.className='cprev'+(isUnread?' unread':'');
+      }
+
+      // Actualizar badge global en nav
+      recountUnread();
+
+      // FIX: notificación push si la app está en segundo plano o en otra pestaña
+      if(isUnread&&msgTime>readTime&&document.visibilityState==='hidden'){
+        sendPushNotification(`Nuevo mensaje de ${f.name}`,lastMsg.text||'');
+      }
+    });
+  });
+}
+
+function recountUnread(){
+  // Cuenta amigos con mensajes sin leer
+  let count=0;
+  friends.forEach(f=>{
+    const dotEl=document.getElementById(`unread-${f.uid}`);
+    if(dotEl&&dotEl.classList.contains('show'))count++;
+  });
+  totalUnread=count;
+  const badge=document.getElementById('chat-nav-badge');
+  if(badge){
+    badge.textContent=count>9?'9+':String(count);
+    badge.classList.toggle('show',count>0);
+  }
+}
 
 function renderChatList(){
   const el=document.getElementById('chat-list');
   if(!friends.length){el.innerHTML='<div class="empty">Agrega amigos para chatear</div>';return;}
   el.innerHTML=friends.map((f,i)=>`<div class="chat-item" onclick="openChatWith('${f.uid}','${esc(f.name)}')">
     <div class="av-wrap">${av(f.name,i)}</div>
-    <div class="cinfo"><div class="cname">${esc(f.name)}</div><div class="cprev">Toca para chatear</div></div>
+    <div class="cinfo">
+      <div class="cname">${esc(f.name)}</div>
+      <div class="cprev" id="prev-${f.uid}">Toca para chatear</div>
+    </div>
+    <div class="ctime">
+      <div class="unread-dot" id="unread-${f.uid}"></div>
+    </div>
   </div>`).join('');
 }
 
@@ -953,12 +1132,21 @@ window.openChatWith=function(friendUid,friendName){
   currentChatFriendId=friendUid;
   document.getElementById('chatwin-name').textContent=friendName;
   document.querySelectorAll('.screen,.detail-screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById('s-chatwin').classList.add('active');
+  const win=document.getElementById('s-chatwin');
+  win.style.display='flex';
+  win.classList.add('active');
   document.getElementById('fab').style.display='none';
   document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-chat').classList.add('active');
   if(chatUnsub)chatUnsub();
+
+  // Marcar como leído
   const chatId=getChatId(currentUser.uid,friendUid);
+  lastRead[chatId]=Math.floor(Date.now()/1000);
+  const dotEl=document.getElementById(`unread-${friendUid}`);
+  if(dotEl)dotEl.classList.remove('show');
+  recountUnread();
+
   const q=query(collection(db,'chats',chatId,'messages'),orderBy('createdAt','asc'));
   chatUnsub=onSnapshot(q,snap=>{
     const msgs=snap.docs.map(d=>d.data());
@@ -967,13 +1155,23 @@ window.openChatWith=function(friendUid,friendName){
       const mine=m.uid===currentUser.uid;
       const time=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'';
       return`<div class="msg ${mine?'mine':'theirs'}">
-        ${!mine?`<div class="msg-name">${esc(m.name)}</div>`:''}
+        ${!mine?`<div class="msg-name">${esc(m.name||'')}</div>`:''}
         ${esc(m.text)}
         <div class="msg-time">${time}</div>
       </div>`;
     }).join('');
     el.scrollTop=el.scrollHeight;
+    // Actualizar last read con cada mensaje nuevo mientras estoy dentro
+    lastRead[chatId]=Math.floor(Date.now()/1000);
   });
+};
+
+// FIX: al cerrar la ventana de chat vuelve a la lista
+window.closeChatWindow=function(){
+  if(chatUnsub){chatUnsub();chatUnsub=null;}
+  currentChatFriendId=null;
+  document.getElementById('s-chatwin').style.display='none';
+  showScreen('chat');
 };
 
 window.sendMsg=async function(){
@@ -991,6 +1189,7 @@ window.sendMsg=async function(){
 // ── NAV & OVERLAY ──
 window.showScreen=function(name){
   document.querySelectorAll('.screen,.detail-screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s-chatwin').style.display='none';
   document.getElementById('s-'+name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(n=>n.classList.remove('active'));
   document.getElementById('nav-'+name).classList.add('active');
@@ -1004,12 +1203,6 @@ window.closeOverlay=function(id){document.getElementById(id).classList.remove('o
 document.querySelectorAll('.overlay').forEach(o=>{
   o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
 });
-
-window.switchTab=function(btn,targetId){
-  btn.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  ['t-recv','t-sent'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=id===targetId?'block':'none';});
-};
 
 </script>
 </body>
