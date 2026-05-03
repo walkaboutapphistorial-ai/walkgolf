@@ -4,14 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>WalkGolf App</title>
-<meta name="description" content="Registra tus partidas de Walkabout Mini Golf">
-<meta name="theme-color" content="#1a1a2e">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="WalkGolf">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-192.png">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -954,7 +946,6 @@ function renderRanking(){
   const stats={};
   games.forEach(g=>{
     const players=g.players||[];
-    // Contar victorias igual que H2H: comparar golpes directamente, empate si son iguales
     if(players.length===2){
       const [a,b]=players;
       if(!stats[a.name])stats[a.name]={games:0,wins:0,hio:0};
@@ -964,8 +955,7 @@ function renderRanking(){
       if(a.shots<b.shots)stats[a.name].wins++;
       else if(b.shots<a.shots)stats[b.name].wins++;
       // empate: nadie suma victoria
-    } else {
-      // Para partidas de más de 2 jugadores usar getWinner
+    }else{
       const w=getWinner(g);
       players.forEach(p=>{
         if(!stats[p.name])stats[p.name]={games:0,wins:0,hio:0};
@@ -1252,15 +1242,6 @@ document.querySelectorAll('.overlay').forEach(o=>{
   o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');});
 });
 
-</script>
-<script>
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{
-    navigator.serviceWorker.register('sw.js')
-      .then(r=>console.log('SW registrado'))
-      .catch(e=>console.log('SW error:',e));
-  });
-}
 </script>
 </body>
 </html>
