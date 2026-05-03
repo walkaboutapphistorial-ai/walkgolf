@@ -1,7 +1,7 @@
-const CACHE = 'walkgolf-v1';
+const CACHE = 'walkgolf-v2';
 const ASSETS = [
-  '/',
-  '/index.html'
+  '/walkgolf/',
+  '/walkgolf/index.html'
 ];
 
 self.addEventListener('install', e => {
@@ -21,10 +21,9 @@ self.addEventListener('activate', e => {
 });
 
 self.addEventListener('fetch', e => {
-  // Solo cachear GET, ignorar Firebase y Cloudinary
   if (e.request.method !== 'GET') return;
   const url = e.request.url;
-  if (url.includes('firestore') || url.includes('firebase') || url.includes('cloudinary') || url.includes('googleapis')) return;
+  if (url.includes('firestore') || url.includes('firebase') || url.includes('cloudinary') || url.includes('googleapis') || url.includes('gstatic')) return;
 
   e.respondWith(
     fetch(e.request)
