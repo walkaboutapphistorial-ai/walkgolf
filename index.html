@@ -361,31 +361,67 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
       <h2>Nueva Partida</h2>
       <div class="field"><label>Fecha</label><input type="date" id="f-date"></div>
       <div class="field"><label>Mapa</label>
-        <select id="f-map">
+        <select id="f-map" onchange="updatePar()">
           <option value="">Seleccionar mapa...</option>
-          <option value="Rollerworld|54">Rollerworld</option>
-          <option value="The Dusty Dunes|54">The Dusty Dunes</option>
-          <option value="Pirate Cove|54">Pirate Cove</option>
-          <option value="Mummy's Tomb|54">Mummy's Tomb</option>
-          <option value="Camp Mammoth|54">Camp Mammoth</option>
-          <option value="The Great Wall|54">The Great Wall</option>
-          <option value="Neon Tokyo|54">Neon Tokyo</option>
-          <option value="Sweetopia|54">Sweetopia</option>
-          <option value="Sky Garden|54">Sky Garden</option>
-          <option value="Deep Space|54">Deep Space</option>
+          <option value="Tourist Trap|57|61">Tourist Trap</option>
+          <option value="Cherry Blossom|63|67">Cherry Blossom</option>
+          <option value="Quijote Valley|54|60">Quijote Valley</option>
+          <option value="Sweetopia|55|59">Sweetopia</option>
+          <option value="Upside Town|58|63">Upside Town</option>
+          <option value="Alfheim|57|61">Alfheim</option>
+          <option value="Seagull Stacks|62|67">Seagull Stacks</option>
+          <option value="Arizona Modern|66|65">Arizona Modern</option>
+          <option value="Bogey's Bonanza|60|67">Bogey's Bonanza</option>
+          <option value="Tethys Station|63|64">Tethys Station</option>
+          <option value="Holiday Hideaway|56|55">Holiday Hideaway</option>
+          <option value="Jardines de Marte|58|60">Jardines de Marte</option>
+          <option value="Monte Olimpo|61|62">Monte Olimpo</option>
+          <option value="Raptop Cliff's|59|59">Raptop Cliff's</option>
+          <option value="Tiki A Coco|55|57">Tiki A Coco</option>
+          <option value="Wallace & Gromit|55|55">Wallace &amp; Gromit</option>
+          <option value="Elvis|57|60">Elvis</option>
+          <option value="Alice in Wonderland|64|66">Alice in Wonderland</option>
+          <option value="Labyrinth|64|65">Labyrinth</option>
+          <option value="Myst|61|63">Myst</option>
+          <option value="Meow Wolf|57|57">Meow Wolf</option>
+          <option value="Shangri-La|64|68">Shangri-La</option>
+          <option value="Jardines de Babilonia|61|64">Jardines de Babilonia</option>
+          <option value="El Dorado|62|61">El Dorado</option>
+          <option value="Atlantis|59|59">Atlantis</option>
+          <option value="Temple at Zerzura|63|60">Temple at Zerzura</option>
+          <option value="Original Gothic|63|72">Original Gothic</option>
+          <option value="Widow's Walkabout|63|60">Widow's Walkabout</option>
+          <option value="Forgotten Fairyland|63|59">Forgotten Fairyland</option>
+          <option value="20.000 Leguas de Viaje Submarino|63|60">20.000 Leguas de Viaje Submarino</option>
+          <option value="Viaje al centro de la Tierra|63|60">Viaje al centro de la Tierra</option>
+          <option value="La vuelta al mundo en 80 días|57|56">La vuelta al mundo en 80 días</option>
+          <option value="Laser Lair|57|58">Laser Lair</option>
+          <option value="Ice Lair|61|59">Ice Lair</option>
+          <option value="B8-Bit Lair|57|61">B8-Bit Lair</option>
+          <option value="Cristal Lair|58|58">Cristal Lair</option>
+          <option value="Venice|58|60">Venice</option>
+          <option value="Tokio|55|55">Tokio</option>
+          <option value="Hollywood|56|62">Hollywood</option>
         </select>
       </div>
       <div class="field"><label>Tipo de mapa</label>
         <select id="f-type">
           <option value="">Seleccionar...</option>
-          <option>Base</option><option>DLC</option><option>Colaboración</option>
+          <option>Normal</option>
+          <option>Gigante</option>
+          <option>Mini</option>
         </select>
       </div>
       <div class="field"><label>Dificultad</label>
-        <select id="f-diff">
+        <select id="f-diff" onchange="updatePar()">
           <option value="">Seleccionar...</option>
-          <option>Fácil</option><option>Normal</option><option>Difícil</option><option>Experto</option>
+          <option>Fácil</option>
+          <option>Difícil</option>
         </select>
+      </div>
+      <div class="field">
+        <label>PAR</label>
+        <input type="number" id="f-par" readonly style="opacity:.6;cursor:not-allowed" placeholder="Se calcula automáticamente">
       </div>
       <button class="btn-primary" onclick="createGame()">Crear Partida</button>
       <button class="btn-sec" onclick="closeOverlay('o-new')">Cancelar</button>
@@ -649,8 +685,8 @@ window.sendRequest=async function(toUid,toName){
 
 // ── GAMES LOGIC ──
 function getWinner(g){return g.players?.length?g.players.reduce((a,b)=>a.shots<b.shots?a:b.shots<a.shots?b:a.hio>=b.hio?a:b):null;}
-function diffBadge(d){if(d==='Fácil')return'b-easy';if(d==='Difícil'||d==='Experto')return'b-hard';return'b-normal';}
-function typeBadge(t){return t==='DLC'?'b-dlc':'b-base';}
+function diffBadge(d){if(d==='Fácil')return'b-easy';if(d==='Difícil')return'b-hard';return'b-normal';}
+function typeBadge(t){return t==='Gigante'?'b-dlc':t==='Mini'?'b-hard':'b-base';}
 
 function renderGames(list){
   const el=document.getElementById('games-list');
@@ -733,15 +769,28 @@ window.goBack=function(){
   document.getElementById('nav-partidas').classList.add('active');
 };
 
+// ── PAR AUTO-CALC ──
+window.updatePar=function(){
+  const mapVal=document.getElementById('f-map').value;
+  const diff=document.getElementById('f-diff').value;
+  const parInput=document.getElementById('f-par');
+  if(!mapVal||!diff){parInput.value='';return;}
+  const parts=mapVal.split('|');
+  parInput.value=diff==='Fácil'?parts[1]:parts[2];
+};
+
 window.createGame=async function(){
   const mapVal=document.getElementById('f-map').value;
   if(!mapVal)return alert('Selecciona un mapa');
-  const[mapName,par]=mapVal.split('|');
+  const par=document.getElementById('f-par').value;
+  if(!par)return alert('Selecciona la dificultad para calcular el PAR');
+  const[mapName]=mapVal.split('|');
   await addDoc(collection(db,'games'),{
     uid:currentUser.uid,
-    map:mapName,par:parseInt(par),
-    type:document.getElementById('f-type').value||'Base',
-    diff:document.getElementById('f-diff').value||'Normal',
+    map:mapName,
+    par:parseInt(par),
+    type:document.getElementById('f-type').value||'Normal',
+    diff:document.getElementById('f-diff').value||'Fácil',
     date:document.getElementById('f-date').value||new Date().toISOString().split('T')[0],
     players:[],
     createdAt:serverTimestamp()
@@ -914,7 +963,6 @@ window.openChatWith=function(friendUid,friendName){
   chatUnsub=onSnapshot(q,snap=>{
     const msgs=snap.docs.map(d=>d.data());
     const el=document.getElementById('chat-msgs');
-    const myName=currentUser._profile?.name||currentUser.displayName||'Yo';
     el.innerHTML=msgs.map(m=>{
       const mine=m.uid===currentUser.uid;
       const time=m.createdAt?.toDate?new Date(m.createdAt.toDate()).toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}):'';
