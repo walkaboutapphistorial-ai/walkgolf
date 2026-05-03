@@ -235,7 +235,9 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
     <input id="auth-pass" type="password" placeholder="Contraseña" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none">
   </div>
   <div id="auth-name-wrap" style="width:100%;margin-top:10px;display:none">
-    <input id="auth-name" placeholder="Tu nombre de usuario" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none">
+    <div id="lbl-register-username" style="font-size:12px;color:var(--txt2);margin-bottom:6px;font-weight:500">Elige tu nombre de usuario</div>
+    <input id="auth-name" placeholder="Ej: GolfPro99" style="width:100%;background:var(--card);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none">
+    <div id="lbl-register-username-hint" style="font-size:11px;color:#ffd700;margin-top:7px;display:flex;align-items:flex-start;gap:5px;line-height:1.4">⚠️ Este nombre no podrá cambiarse después.</div>
   </div>
   <button class="btn-primary" style="margin-top:16px" onclick="loginEmail()">Entrar</button>
   <p id="auth-toggle" style="color:var(--txt2);font-size:12px;margin-top:16px;cursor:pointer">¿No tienes cuenta? <span style="color:var(--acc2)" onclick="toggleRegister()">Regístrate</span></p>
@@ -306,7 +308,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 
   <!-- GANADORES -->
   <div class="screen" id="s-ganadores">
-    <div class="topbar"><h1>🥇 Gana<span>dores</span></h1></div>
+    <div class="topbar"><h1 id="ganadores-title">🥇 Gana<span>dores</span></h1></div>
     <div class="search-wrap">
       <div class="search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -318,7 +320,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 
   <!-- AMIGOS -->
   <div class="screen" id="s-amigos">
-    <div class="topbar"><h1>👥 Ami<span>gos</span></h1></div>
+    <div class="topbar"><h1 id="amigos-title">👥 Ami<span>gos</span></h1></div>
     <div class="search-wrap">
       <div class="search">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="opacity:.5;flex-shrink:0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
@@ -391,8 +393,8 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
       Ranking
     </button>
     <div class="detail-head">
-      <h2>Historial</h2>
-      <div class="detail-meta">Cara a cara entre jugadores</div>
+      <h2 id="h2h-title-lbl">Historial</h2>
+      <div class="detail-meta" id="h2h-meta-lbl">Cara a cara entre jugadores</div>
     </div>
     <div class="h2h-select">
       <select id="h2h-a" onchange="renderH2H()"></select>
@@ -502,7 +504,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
   <div class="screen" id="s-perfil">
     <!-- topbar propio -->
     <div class="topbar" id="perfil-topbar-own">
-      <h1>👤 Per<span>fil</span></h1>
+      <h1 id="perfil-topbar-title">👤 Per<span>fil</span></h1>
     </div>
     <!-- topbar ajeno con flecha atrás -->
     <div class="topbar" id="perfil-topbar-friend" style="display:none">
@@ -525,13 +527,14 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
         </div>
       </div>
 
-      <!-- Editar nombre (solo perfil propio) -->
+      <!-- Nombre de usuario (solo lectura) -->
       <div id="perfil-edit-name" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
-        <div id="lbl-display-name" style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:12px">Nombre para mostrar</div>
-        <div style="display:flex;gap:8px">
-          <input id="profile-name-input" placeholder="Tu nombre" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid var(--border);border-radius:11px;padding:10px 13px;color:var(--txt);font-size:14px;font-family:var(--fb);outline:none">
-          <button id="btn-save-name" onclick="saveProfileName()" style="background:var(--acc2);color:#0a1628;border:none;border-radius:11px;padding:10px 16px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);white-space:nowrap">Guardar</button>
+        <div id="lbl-display-name" style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">Nombre de usuario</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div id="profile-name-input-display" style="flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:11px;padding:10px 13px;color:var(--txt);font-size:14px;font-family:var(--fb)"></div>
+          <div style="font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:4px;flex-shrink:0">🔒 <span id="lbl-name-fixed">Fijo</span></div>
         </div>
+        <div id="lbl-name-fixed-hint" style="font-size:11px;color:var(--txt2);margin-top:8px">El nombre de usuario no se puede cambiar una vez creada la cuenta.</div>
       </div>
 
       <!-- Stats -->
@@ -591,7 +594,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
       <div id="perfil-lang" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:20px;text-align:center">
         <div style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">Idioma / Language</div>
         <div style="display:flex;gap:8px;justify-content:center">
-          <button class="lang-btn" data-lang="es" onclick="setLang('es')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇦🇷 ES</button>
+          <button class="lang-btn" data-lang="es" onclick="setLang('es')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇪🇸 ES</button>
           <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇺🇸 EN</button>
           <button class="lang-btn" data-lang="pt" onclick="setLang('pt')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇧🇷 PT</button>
         </div>
@@ -708,9 +711,56 @@ function enterApp(){
   const name=currentUser._profile?.name||currentUser.displayName||'Tú';
   document.getElementById('topbar-user').innerHTML=`${av(name,0)}<span style="font-size:12px;color:var(--txt2)">${esc(name)}</span>`;
   document.getElementById('topbar-user').onclick=()=>showScreen('perfil');
+  const myName2=currentUser._profile?.name||currentUser.displayName||'Yo';
+  uidNameCache[currentUser.uid]=myName2;
   loadFriends();
   requestNotificationPermission();
   applyLang();
+  // Migración one-shot: renombrar Piojoso87! → Alejo87 en partidas y usuarios
+  runMigrationPiojoso();
+}
+
+// ── MIGRACIÓN: Piojoso87! → Alejo87 ──
+// Corre silenciosamente; usa un flag en localStorage para no repetirse
+async function runMigrationPiojoso(){
+  const OLD='Piojoso87!', NEW='Alejo87';
+  const flagKey='wg_migrated_piojoso_v1';
+  if(localStorage.getItem(flagKey))return;
+  try{
+    // 1. Actualizar el documento de usuario si su nombre es el viejo
+    const usersSnap=await getDocs(query(collection(db,'users'),where('name','==',OLD)));
+    const userBatch=usersSnap.docs.map(d=>updateDoc(doc(db,'users',d.id),{name:NEW}));
+    if(userBatch.length)await Promise.all(userBatch);
+
+    // 2. Actualizar todas las partidas que tengan al jugador con ese nombre
+    const gamesSnap=await getDocs(collection(db,'games'));
+    const gameBatch=[];
+    gamesSnap.docs.forEach(d=>{
+      const g=d.data();
+      const players=g.players||[];
+      let changed=false;
+      const updated=players.map(p=>{
+        if(p.name===OLD){changed=true;return{...p,name:NEW};}
+        return p;
+      });
+      if(changed)gameBatch.push(updateDoc(doc(db,'games',d.id),{players:updated}));
+    });
+    if(gameBatch.length)await Promise.all(gameBatch);
+
+    // 3. Actualizar solicitudes de amistad (fromName/toName)
+    const reqSnap=await getDocs(collection(db,'friendRequests'));
+    const reqBatch=[];
+    reqSnap.docs.forEach(d=>{
+      const data=d.data();
+      const updates={};
+      if(data.fromName===OLD)updates.fromName=NEW;
+      if(data.toName===OLD)updates.toName=NEW;
+      if(Object.keys(updates).length)reqBatch.push(updateDoc(doc(db,'friendRequests',d.id),updates));
+    });
+    if(reqBatch.length)await Promise.all(reqBatch);
+
+    localStorage.setItem(flagKey,'1');
+  }catch(e){console.warn('Migration error:',e);}
 }
 
 window.doSignOut=async function(){
@@ -736,30 +786,36 @@ function sendPushNotification(title,body){
 }
 
 // ── GAMES — carga partidas propias + de amigos ──
+async function resolveAllPlayerUids(gamesList){
+  const unknownUids=new Set();
+  gamesList.forEach(g=>(g.players||[]).forEach(p=>{
+    if(p.uid&&!uidNameCache[p.uid])unknownUids.add(p.uid);
+  }));
+  if(unknownUids.size){
+    await Promise.all([...unknownUids].map(uid=>resolvePlayerName(uid)));
+  }
+}
+
 function loadGames(){
   if(gamesUnsub)gamesUnsub();
-  // UIDs a consultar: el propio + todos los amigos
   const uids=[currentUser.uid,...friends.map(f=>f.uid)];
-  // Firestore soporta 'in' con hasta 30 valores
   const chunks=[];
   for(let i=0;i<uids.length;i+=30)chunks.push(uids.slice(i,i+30));
   let allGames=[];
-  let pending=chunks.length;
   const unsubs=[];
   chunks.forEach(chunk=>{
     const q=query(collection(db,'games'),where('uid','in',chunk),orderBy('date','desc'));
-    const u=onSnapshot(q,snap=>{
+    const u=onSnapshot(q,async snap=>{
       const chunkGames=snap.docs.map(d=>({...d.data(),id:d.id}));
-      // Reemplazar el segmento de este chunk en allGames
       allGames=allGames.filter(g=>!chunk.includes(g.uid)).concat(chunkGames);
-      // Ordenar por fecha desc
       allGames.sort((a,b)=>b.date.localeCompare(a.date));
       games=[...allGames];
+      // Esperar a que TODOS los UIDs estén resueltos antes de renderizar
+      await resolveAllPlayerUids(games);
       renderGames(games);renderRanking();renderWinners();populateFriendSelect();
     });
     unsubs.push(u);
   });
-  // Devolvemos una función que cancela todos los listeners
   gamesUnsub=()=>unsubs.forEach(u=>u());
 }
 
@@ -770,23 +826,30 @@ function loadFriends(){
   const qTo=query(collection(db,'friendRequests'),where('to','==',currentUser.uid),where('status','==','accepted'));
   const qFrom=query(collection(db,'friendRequests'),where('from','==',currentUser.uid),where('status','==','accepted'));
 
+  let rebuildPending=false;
   async function rebuildFriends(){
-    const [snapTo,snapFrom]=await Promise.all([getDocs(qTo),getDocs(qFrom)]);
-    const uidSet=new Set();
-    snapTo.docs.forEach(d=>uidSet.add(d.data().from));
-    snapFrom.docs.forEach(d=>uidSet.add(d.data().to));
-    // Eliminar el propio uid por si acaso
-    uidSet.delete(currentUser.uid);
-    friends=[];
-    for(const fid of uidSet){
-      const fs=await getDoc(doc(db,'users',fid));
-      if(fs.exists())friends.push({uid:fid,...fs.data()});
-    }
-    renderFriendsList();
-    renderChatList();
-    populateFriendSelect();
-    setupUnreadListeners();
-    loadGames();
+    if(rebuildPending)return;
+    rebuildPending=true;
+    setTimeout(async()=>{
+      rebuildPending=false;
+      const [snapTo,snapFrom]=await Promise.all([getDocs(qTo),getDocs(qFrom)]);
+      const uidSet=new Set();
+      snapTo.docs.forEach(d=>uidSet.add(d.data().from));
+      snapFrom.docs.forEach(d=>uidSet.add(d.data().to));
+      uidSet.delete(currentUser.uid);
+      friends=[];
+      for(const fid of uidSet){
+        const fs=await getDoc(doc(db,'users',fid));
+        if(fs.exists())friends.push({uid:fid,...fs.data()});
+      }
+      // Populate UID name cache from friends
+      friends.forEach(f=>{if(f.uid&&f.name)uidNameCache[f.uid]=f.name;});
+      renderFriendsList();
+      renderChatList();
+      populateFriendSelect();
+      setupUnreadListeners();
+      loadGames();
+    },200);
   }
 
   friendsUnsub=onSnapshot(qTo,()=>rebuildFriends());
@@ -902,10 +965,60 @@ window.sendRequest=async function(toUid,toName){
   document.getElementById('search-result').innerHTML='';
 };
 
+// ── MAP ORDER (para Ganadores e H2H) ──
+const MAP_ORDER=[
+  'Tourist Trap','Cherry Blossom','Quijote Valley','Sweetopia','Upside Town','Alfheim',
+  'Seagull Stacks','Arizona Modern',"Bogey's Bonanza",'Tethys Station','Holiday Hideaway',
+  'Jardines de Marte','Monte Olimpo',"Raptop Cliff's",'Tiki A Coco','Wallace & Gromit',
+  'Elvis','Alice in Wonderland','Labyrinth','Myst','Meow Wolf','Shangri-La',
+  'Jardines de Babilonia','El Dorado','Atlantis','Temple at Zerzura','Original Gothic',
+  "Widow's Walkabout",'Forgotten Fairyland','20.000 Leguas de Viaje Submarino',
+  'Viaje al centro de la Tierra','La vuelta al mundo en 80 días',
+  'Laser Lair','Ice Lair','B8-Bit Lair','Cristal Lair','Venice','Tokio','Hollywood'
+];
+
+// ── UID→NAME CACHE: para resolver nombres actuales de jugadores ──
+const uidNameCache={};
+async function resolvePlayerName(uid){
+  if(!uid)return null;
+  if(uidNameCache[uid])return uidNameCache[uid];
+  // Buscar en friends primero
+  const f=friends.find(x=>x.uid===uid);
+  if(f){uidNameCache[uid]=f.name;return f.name;}
+  // Si es el usuario actual
+  if(uid===currentUser?.uid){
+    const n=currentUser._profile?.name||currentUser.displayName||'Yo';
+    uidNameCache[uid]=n;return n;
+  }
+  // Buscar en Firestore
+  try{
+    const snap=await getDoc(doc(db,'users',uid));
+    if(snap.exists()){const n=snap.data().name||uid;uidNameCache[uid]=n;return n;}
+  }catch(e){}
+  return uid;
+}
+
+// Resuelve el nombre a mostrar: si el jugador tiene uid, busca el nombre actual
+function getPlayerDisplayName(p){
+  if(p.uid&&uidNameCache[p.uid])return uidNameCache[p.uid];
+  return p.name||p.uid||'?';
+}
+
 // ── GAMES LOGIC ──
 function getWinner(g){return g.players?.length?g.players.reduce((a,b)=>a.shots<b.shots?a:b.shots<a.shots?b:a.hio>=b.hio?a:b):null;}
+function samePlayer(a,b){return(a.uid&&b.uid&&a.uid===b.uid)||(a.name===b.name);}
 function diffBadge(d){if(d==='Fácil')return'b-easy';if(d==='Difícil')return'b-hard';return'b-normal';}
 function typeBadge(t){return t==='Gigante'?'b-dlc':t==='Mini'?'b-hard':'b-base';}
+
+// Traducciones de tipo de mapa y dificultad
+function translateType(v){
+  const map={Normal:{es:'Normal',en:'Normal',pt:'Normal'},Gigante:{es:'Gigante',en:'Giant',pt:'Gigante'},Mini:{es:'Mini',en:'Mini',pt:'Mini'}};
+  return(map[v]&&map[v][currentLang])||v;
+}
+function translateDiff(v){
+  const map={Fácil:{es:'Fácil',en:'Easy',pt:'Fácil'},Difícil:{es:'Difícil',en:'Hard',pt:'Difícil'}};
+  return(map[v]&&map[v][currentLang])||v;
+}
 
 function renderGames(list){
   const el=document.getElementById('games-list');
@@ -921,12 +1034,12 @@ function renderGames(list){
       </div>
       <div class="meta-row" onclick="openDetail('${g.id}')" style="cursor:pointer">
         <span class="date-txt">${g.date}</span>
-        <span class="badge ${typeBadge(g.type)}">${esc(g.type)}</span>
-        <span class="badge ${diffBadge(g.diff)}">${esc(g.diff)}</span>
+        <span class="badge ${typeBadge(g.type)}">${esc(translateType(g.type))}</span>
+        <span class="badge ${diffBadge(g.diff)}">${esc(translateDiff(g.diff))}</span>
         <span class="badge" style="background:rgba(255,255,255,0.07);color:var(--txt2)">PAR ${g.par}</span>
       </div>
       <div class="player-chips" onclick="openDetail('${g.id}')" style="cursor:pointer">
-        ${g.players?.length?g.players.map(p=>`<span class="chip${w&&p.name===w.name?' winner':''}">${esc(p.name)}${w&&p.name===w.name?' 🏆':''}</span>`).join(''):'<span class="chip">Sin jugadores aún</span>'}
+        ${g.players&&g.players.length?g.players.map(p=>{const nm=getPlayerDisplayName(p);return`<span class="chip${w&&(p.uid?p.uid===w.uid:p.name===w.name)?' winner':''}">${esc(nm)}${w&&(p.uid?p.uid===w.uid:p.name===w.name)?' 🏆':''}</span>`}).join(''):'<span class="chip">Sin jugadores aún</span>'}
       </div>
     </div>`;
   }).join('');
@@ -952,15 +1065,16 @@ function refreshDetail(g){
   const sorted=[...(g.players||[])].sort((a,b)=>a.shots-b.shots);
   const w=getWinner(g);
   const banner=document.getElementById('d-banner');
-  if(w){const r=w.shots-g.par;const sign=r<0?'':r>0?'+':'E';banner.innerHTML=`<div class="winner-banner">🏆 ${esc(w.name)} gana con ${w.shots} golpes (${r===0?'E':sign+r})</div>`;}
+  if(w){const r=w.shots-g.par;const sign=r<0?'':r>0?'+':'E';const wn=getPlayerDisplayName(w);banner.innerHTML=`<div class="winner-banner">🏆 ${esc(wn)} gana con ${w.shots} golpes (${r===0?'E':sign+r})</div>`;}
   else banner.innerHTML='';
   const sc=document.getElementById('d-scores');
   if(!g.players?.length){sc.innerHTML='<div class="empty" style="padding:24px">Agrega jugadores para ver resultados</div>';return;}
   sc.innerHTML=`<div class="score-row hdr"><span>Jugador</span><span style="text-align:right">Golpes</span><span style="text-align:right">Score</span></div>`
   +sorted.map((p,i)=>{
     const r=p.shots-g.par;const sign=r<0?'':r>0?'+':'E';const cls=r<0?'s-neg':r>0?'s-pos':'';
+    const pn=getPlayerDisplayName(p);
     return`<div class="score-row" style="${i===0?'background:rgba(255,215,0,0.05)':''}">
-      <div class="score-name"><div class="av-wrap">${av(p.name,i)}</div>${esc(p.name)}${i===0?' 🏆':''}</div>
+      <div class="score-name"><div class="av-wrap">${av(pn,i)}</div>${esc(pn)}${i===0?' 🏆':''}</div>
       <div class="s-shots">${p.shots}</div>
       <div class="s-rel ${cls}">${r===0?'E':sign+r}</div>
     </div>`;
@@ -974,9 +1088,16 @@ window.addPlayer=async function(){
   const hi=parseInt(document.getElementById('d-hio').value)||0;
   if(!pl||sh<1||sh>99)return;
   const players=[...(g.players||[])];
-  const ei=players.findIndex(p=>p.name===pl);
-  if(ei>=0)players[ei]={name:pl,shots:sh,hio:hi};
-  else players.push({name:pl,shots:sh,hio:hi});
+  // Resolve UID for this player (own user or friend)
+  const myName=currentUser._profile?.name||currentUser.displayName||'Yo';
+  let playerUid=null;
+  if(pl===myName)playerUid=currentUser.uid;
+  else{const fr=friends.find(f=>f.name===pl);if(fr)playerUid=fr.uid;}
+  const playerObj=playerUid?{name:pl,uid:playerUid,shots:sh,hio:hi}:{name:pl,shots:sh,hio:hi};
+  // Match by uid if available, else by name
+  const ei=players.findIndex(p=>(playerUid&&p.uid===playerUid)||(p.name===pl));
+  if(ei>=0)players[ei]=playerObj;
+  else players.push(playerObj);
   await updateDoc(doc(db,'games',currentGameId),{players});
   document.getElementById('d-player').value='';
   document.getElementById('d-shots').value='';
@@ -1059,34 +1180,31 @@ window.createGame=async function(){
 };
 
 // ── RANKING ──
+// Clave estable por jugador: UID si existe, sino nombre
+function playerKey(p){return p.uid||p.name||'?';}
+
 function renderRanking(){
-  const stats={};
+  // stats keyed por UID (o nombre si no hay UID)
+  const stats={};   // key -> {games,wins,hio,displayName}
   games.forEach(g=>{
     const players=g.players||[];
-    if(players.length===2){
-      const [a,b]=players;
-      if(!stats[a.name])stats[a.name]={games:0,wins:0,hio:0};
-      if(!stats[b.name])stats[b.name]={games:0,wins:0,hio:0};
-      stats[a.name].games++;stats[a.name].hio+=(a.hio||0);
-      stats[b.name].games++;stats[b.name].hio+=(b.hio||0);
-      if(a.shots<b.shots)stats[a.name].wins++;
-      else if(b.shots<a.shots)stats[b.name].wins++;
-      // empate: nadie suma victoria
-    }else{
-      const w=getWinner(g);
-      players.forEach(p=>{
-        if(!stats[p.name])stats[p.name]={games:0,wins:0,hio:0};
-        stats[p.name].games++;stats[p.name].hio+=(p.hio||0);
-        if(w&&p.name===w.name)stats[p.name].wins++;
-      });
-    }
+    const w=getWinner(g);
+    players.forEach(p=>{
+      const key=playerKey(p);
+      const nm=getPlayerDisplayName(p);
+      if(!stats[key])stats[key]={games:0,wins:0,hio:0,displayName:nm};
+      else stats[key].displayName=nm; // actualizar siempre con el nombre más reciente del cache
+      stats[key].games++;
+      stats[key].hio+=(p.hio||0);
+      if(w&&samePlayer(p,w))stats[key].wins++;
+    });
   });
-  const sorted=Object.entries(stats).sort((a,b)=>b[1].wins-a[1].wins||b[1].hio-a[1].hio||b[1].games-a[1].games);
+  const sorted=Object.values(stats).sort((a,b)=>b.wins-a.wins||b.hio-a.hio||b.games-a.games);
   const el=document.getElementById('rank-tbl');
-  el.innerHTML=`<div class="rrow hdr"><span>#</span><span>Jugador</span><span style="text-align:right">Part.</span><span style="text-align:right">Vict.</span><span style="text-align:right">H-en-1</span></div>`
-  +sorted.map(([name,s],i)=>`<div class="rrow" data-name="${name.toLowerCase()}">
+  el.innerHTML=`<div class="rrow hdr"><span>#</span><span>${t('playerLabel')}</span><span style="text-align:right">${t('statPartidas').slice(0,4)}.</span><span style="text-align:right">${t('statVictorias').slice(0,4)}.</span><span style="text-align:right">${t('hioLabel')}</span></div>`
+  +sorted.map((s,i)=>`<div class="rrow" data-name="${s.displayName.toLowerCase()}">
     <span class="rnum ${i===0?'gold':i===1?'silver':i===2?'bronze':''}">${i+1}</span>
-    <div class="prow">${av(name,i)}<span style="font-size:14px">${esc(name)}</span></div>
+    <div class="prow">${av(s.displayName,i)}<span style="font-size:14px">${esc(s.displayName)}</span></div>
     <span class="sval">${s.games}</span>
     <span class="sval" style="color:var(--acc3);font-weight:700">${s.wins}</span>
     <span class="sval" style="color:#ffd700;font-weight:700">${s.hio}</span>
@@ -1101,21 +1219,68 @@ window.filterRanking=function(v){
 
 // ── WINNERS ──
 function renderWinners(){
+  // mapWins[map][playerKey] = {total, displayName, byType:{}}
   const mapWins={};
-  games.forEach(g=>{const w=getWinner(g);if(!w)return;if(!mapWins[g.map])mapWins[g.map]={};mapWins[g.map][w.name]=(mapWins[g.map][w.name]||0)+1;});
+  games.forEach(g=>{
+    const w=getWinner(g);
+    if(!w)return;
+    const key=playerKey(w);
+    const nm=getPlayerDisplayName(w);
+    if(!mapWins[g.map])mapWins[g.map]={};
+    if(!mapWins[g.map][key])mapWins[g.map][key]={total:0,displayName:nm,byType:{}};
+    mapWins[g.map][key].displayName=nm; // siempre actualizar al nombre más reciente
+    mapWins[g.map][key].total++;
+    const tp=g.type||'Normal';
+    const df=g.diff||'Fácil';
+    if(!mapWins[g.map][key].byType[tp])mapWins[g.map][key].byType[tp]={};
+    mapWins[g.map][key].byType[tp][df]=(mapWins[g.map][key].byType[tp][df]||0)+1;
+  });
   const el=document.getElementById('winners-list');
-  if(!Object.keys(mapWins).length){el.innerHTML='<div class="empty">No hay ganadores aún</div>';return;}
-  el.innerHTML=Object.entries(mapWins).map(([map,players])=>{
-    const sorted=Object.entries(players).sort((a,b)=>b[1]-a[1]);
-    return`<div class="sec-title">${esc(map)}</div>
-    <div class="sec-card" style="margin:0 16px 10px">
-      ${sorted.map(([pl,wins],i)=>`<div class="wcard" style="margin:0;border-radius:0;border-left:none;border-right:none;border-top:none;border-bottom:1px solid var(--border)${i===sorted.length-1?';border-bottom:none':''}">
-        <div><div class="wmap">${esc(pl)}</div><div class="wplayer">${wins} victoria${wins!==1?'s':''}</div></div>
-        <div class="wins-badge">${i===0?'👑':'🏅'} ${wins}</div>
-      </div>`).join('')}
-    </div>`;
-  }).join('');
+  if(!Object.keys(mapWins).length){el.innerHTML='<div class="empty">'+(t('noWinners')||'No hay ganadores aún')+'</div>';return;}
+  const sortedMaps=Object.keys(mapWins).sort((a,b)=>{
+    const ia=MAP_ORDER.indexOf(a),ib=MAP_ORDER.indexOf(b);
+    if(ia===-1&&ib===-1)return a.localeCompare(b);
+    if(ia===-1)return 1;if(ib===-1)return -1;
+    return ia-ib;
+  });
+  const winLbl=function(n){return n===1?'1 '+(t('win1')||'victoria'):n+' '+(t('wins')||'victorias');};
+  let html='';
+  sortedMaps.forEach(function(map){
+    const playersByKey=mapWins[map];
+    const sorted=Object.values(playersByKey).sort((a,b)=>b.total-a.total);
+    const mapId='wm_'+map.replace(/[^a-zA-Z0-9]/g,'_');
+    html+='<div class="sec-title" style="cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="toggleWinMap(\''+mapId+'\')">'
+      +'<span>'+esc(map)+'</span><span style="font-size:14px;color:var(--txt2)">▾</span></div>';
+    html+='<div id="'+mapId+'" style="display:block"><div class="sec-card" style="margin:0 16px 10px">';
+    sorted.forEach(function(data,i){
+      const pl=data.displayName;
+      const isLast=i===sorted.length-1;
+      html+='<div style="border-bottom:'+(isLast?'none':'1px solid var(--border')+'">';
+      html+='<div class="wcard" style="margin:0;border-radius:0;border:none">'
+        +'<div><div class="wmap">'+esc(pl)+'</div><div class="wplayer">'+winLbl(data.total)+'</div></div>'
+        +'<div class="wins-badge">'+(i===0?'🥇':i===1?'🥈':'🥉')+' '+data.total+'</div>'
+        +'</div>';
+      let typeHtml='';
+      Object.entries(data.byType).forEach(function(te){
+        const tp=te[0],diffs=te[1];
+        Object.entries(diffs).forEach(function(de){
+          const df=de[0],cnt=de[1];
+          typeHtml+='<div style="display:flex;justify-content:space-between;padding:4px 8px;font-size:11px;color:var(--txt2)">'
+            +'<span>'+esc(translateType(tp))+' · '+esc(translateDiff(df))+'</span>'
+            +'<span style="font-weight:600;color:var(--txt)">'+cnt+'</span></div>';
+        });
+      });
+      if(typeHtml)html+='<div style="background:rgba(255,255,255,0.03);padding:4px 6px 8px">'+typeHtml+'</div>';
+      html+='</div>';
+    });
+    html+='</div></div>';
+  });
+  el.innerHTML=html;
 }
+window.toggleWinMap=function(id){
+  const el=document.getElementById(id);
+  if(el)el.style.display=el.style.display==='none'?'block':'none';
+};
 
 window.filterWinners=function(v){
   document.querySelectorAll('#winners-list .sec-card').forEach(c=>{
@@ -1127,7 +1292,19 @@ window.filterWinners=function(v){
 };
 
 // ── H2H ──
-function getAllPlayers(){const set=new Set();games.forEach(g=>(g.players||[]).forEach(p=>set.add(p.name)));return Array.from(set).sort();}
+// H2H: obtener lista de jugadores únicos (deduplicado por UID)
+function getAllPlayers(){
+  const seen={};// key->displayName
+  games.forEach(g=>(g.players||[]).forEach(p=>{
+    const key=playerKey(p);
+    seen[key]=getPlayerDisplayName(p);// siempre actualiza al nombre más reciente
+  }));
+  return Object.values(seen).sort();
+}
+// Para buscar un jugador en una partida por nombre mostrado (H2H)
+function findPlayerByDisplayName(players, displayName){
+  return players.find(p=>getPlayerDisplayName(p)===displayName);
+}
 
 window.openH2H=function(preselect){
   const players=getAllPlayers();
@@ -1155,10 +1332,10 @@ window.goBackFromH2H=function(){
 window.renderH2H=function(){
   const pA=document.getElementById('h2h-a').value,pB=document.getElementById('h2h-b').value;
   const el=document.getElementById('h2h-content');
-  if(!pA||!pB||pA===pB){el.innerHTML='<div class="h2h-empty">Selecciona dos jugadores distintos</div>';return;}
+  if(!pA||!pB||pA===pB){el.innerHTML='<div class="h2h-empty">'+(t('selectTwoPlayers')||'Selecciona dos jugadores distintos')+'</div>';return;}
   let winsA=0,winsB=0,draws=0,total=0;const mapStats={};
   games.forEach(g=>{
-    const pa=(g.players||[]).find(p=>p.name===pA),pb=(g.players||[]).find(p=>p.name===pB);
+    const pa=findPlayerByDisplayName(g.players||[],pA),pb=findPlayerByDisplayName(g.players||[],pB);
     if(!pa||!pb)return;total++;
     if(!mapStats[g.map])mapStats[g.map]={wA:0,wB:0,draws:0,played:0};
     mapStats[g.map].played++;
@@ -1173,40 +1350,56 @@ window.renderH2H=function(){
   const playerIdx=getAllPlayers();
   const idxA=playerIdx.indexOf(pA)%6,idxB=(playerIdx.indexOf(pB)+2)%6;
   const colA=AT[idxA],colB=AT[idxB];
-  const mapRows=Object.entries(mapStats).map(([map,s])=>{
-    const wA=s.wA>s.wB?'win':s.wA<s.wB?'lose':'draw';
-    const wB=s.wB>s.wA?'win':s.wB<s.wA?'lose':'draw';
-    return`<div class="h2h-map-row"><div class="h2h-map-name">${esc(map)}</div><div class="h2h-cell ${wA}">${s.wA}</div><div class="h2h-cell ${wB}">${s.wB}</div><div class="h2h-played">${s.played}</div></div>`;
+  // Sort map rows by MAP_ORDER
+  const mapRows=Object.entries(mapStats).sort((a,b)=>{
+    const ia=MAP_ORDER.indexOf(a[0]),ib=MAP_ORDER.indexOf(b[0]);
+    if(ia===-1&&ib===-1)return a[0].localeCompare(b[0]);
+    if(ia===-1)return 1;if(ib===-1)return -1;
+    return ia-ib;
+  }).map(([map,s])=>{
+    const clA=s.wA>s.wB?'win':s.wA<s.wB?'lose':'draw';
+    const clB=s.wB>s.wA?'win':s.wB<s.wA?'lose':'draw';
+    return '<div class="h2h-map-row"><div class="h2h-map-name">'+esc(map)+'</div>'
+      +'<div class="h2h-cell '+clA+'">'+s.wA+'</div>'
+      +'<div class="h2h-cell '+clB+'">'+s.wB+'</div>'
+      +'<div class="h2h-played">'+s.played+'</div></div>';
   }).join('');
-  el.innerHTML=`<div class="h2h-hero">
-    <div class="h2h-players">
-      <div class="h2h-player">
-        <div class="av" style="width:44px;height:44px;border-radius:50%;background:${AC[idxA]};color:${colA};font-size:14px;font-family:var(--ff);font-weight:800;display:flex;align-items:center;justify-content:center">${pA.slice(0,2).toUpperCase()}</div>
-        <div class="h2h-name" style="color:${colA}">${esc(pA)}</div>
-        <div class="h2h-score" style="color:${colA}">${winsA}</div>
-        <div class="h2h-lbl">victorias</div>
-      </div>
-      <div style="text-align:center">
-        <div style="font-family:var(--ff);font-size:11px;color:var(--txt2);line-height:1.8">${total} partidas<br>juntos</div>
-        ${draws>0?`<div style="font-size:11px;color:var(--txt2);margin-top:4px">${draws} empate${draws!==1?'s':''}</div>`:''}
-      </div>
-      <div class="h2h-player">
-        <div class="av" style="width:44px;height:44px;border-radius:50%;background:${AC[idxB]};color:${colB};font-size:14px;font-family:var(--ff);font-weight:800;display:flex;align-items:center;justify-content:center">${pB.slice(0,2).toUpperCase()}</div>
-        <div class="h2h-name" style="color:${colB}">${esc(pB)}</div>
-        <div class="h2h-score" style="color:${colB}">${winsB}</div>
-        <div class="h2h-lbl">victorias</div>
-      </div>
-    </div>
-    <div class="h2h-bar-wrap">
-      <div class="h2h-bar-lbl"><span style="color:${colA}">${pct}%</span><span style="color:var(--txt2);font-size:10px">% victorias</span><span style="color:${colB}">${pctB}%</span></div>
-      <div class="h2h-bar"><div class="h2h-bar-a" style="width:${barA}%;background:${colA}"></div><div class="h2h-bar-b" style="width:${barB}%;background:${colB}"></div></div>
-    </div>
-  </div>
-  ${Object.keys(mapStats).length?`<div class="sec-title">Resultados por mapa</div>
-  <div class="sec-card" style="margin:0 16px 16px">
-    <div class="h2h-map-row hdr"><span>Mapa</span><span style="text-align:center;color:${colA}">${esc(pA.split(' ')[0])}</span><span style="text-align:center;color:${colB}">${esc(pB.split(' ')[0])}</span><span style="text-align:center">Part.</span></div>
-    ${mapRows}
-  </div>`:'<div class="h2h-empty">No han jugado juntos aún</div>'}`;
+  const drawsHtml=draws>0?'<div style="font-size:11px;color:var(--txt2);margin-top:4px">'+draws+' '+(t('draw')||'empate')+(draws!==1?'s':'')+'</div>':'';
+  const mapsHtml=Object.keys(mapStats).length
+    ?'<div class="sec-title">'+(t('mapResults')||'Resultados por mapa')+'</div>'
+     +'<div class="sec-card" style="margin:0 16px 16px">'
+     +'<div class="h2h-map-row hdr"><span>Mapa</span>'
+     +'<span style="text-align:center;color:'+colA+'">'+esc(pA.split(' ')[0])+'</span>'
+     +'<span style="text-align:center;color:'+colB+'">'+esc(pB.split(' ')[0])+'</span>'
+     +'<span style="text-align:center">Part.</span></div>'
+     +mapRows+'</div>'
+    :'<div class="h2h-empty">'+(t('noGamesYet')||'No han jugado juntos aún')+'</div>';
+  el.innerHTML=
+    '<div class="h2h-hero">'
+    +'<div class="h2h-players">'
+    +'<div class="h2h-player">'
+    +'<div class="av" style="width:44px;height:44px;border-radius:50%;background:'+AC[idxA]+';color:'+colA+';font-size:14px;font-family:var(--ff);font-weight:800;display:flex;align-items:center;justify-content:center">'+pA.slice(0,2).toUpperCase()+'</div>'
+    +'<div class="h2h-name" style="color:'+colA+'">'+esc(pA)+'</div>'
+    +'<div class="h2h-score" style="color:'+colA+'">'+winsA+'</div>'
+    +'<div class="h2h-lbl">'+t('statVictorias')+'</div>'
+    +'</div>'
+    +'<div style="text-align:center">'
+    +'<div style="font-family:var(--ff);font-size:11px;color:var(--txt2);line-height:1.8">'+total+' '+t('statPartidas')+'<br>'+(t('together')||'juntos')+'</div>'
+    +drawsHtml
+    +'</div>'
+    +'<div class="h2h-player">'
+    +'<div class="av" style="width:44px;height:44px;border-radius:50%;background:'+AC[idxB]+';color:'+colB+';font-size:14px;font-family:var(--ff);font-weight:800;display:flex;align-items:center;justify-content:center">'+pB.slice(0,2).toUpperCase()+'</div>'
+    +'<div class="h2h-name" style="color:'+colB+'">'+esc(pB)+'</div>'
+    +'<div class="h2h-score" style="color:'+colB+'">'+winsB+'</div>'
+    +'<div class="h2h-lbl">'+t('statVictorias')+'</div>'
+    +'</div>'
+    +'</div>'
+    +'<div class="h2h-bar-wrap">'
+    +'<div class="h2h-bar-lbl"><span style="color:'+colA+'">'+pct+'%</span><span style="color:var(--txt2);font-size:10px">% '+t('statVictorias')+'</span><span style="color:'+colB+'">'+pctB+'%</span></div>'
+    +'<div class="h2h-bar"><div class="h2h-bar-a" style="width:'+barA+'%;background:'+colA+'"></div><div class="h2h-bar-b" style="width:'+barB+'%;background:'+colB+'"></div></div>'
+    +'</div>'
+    +'</div>'
+    +mapsHtml;
 };
 
 // ── CHAT: no leídos ──
@@ -1275,7 +1468,7 @@ function renderChatList(){
     <div class="av-wrap">${av(f.name,i)}</div>
     <div class="cinfo">
       <div class="cname">${esc(f.name)}</div>
-      <div class="cprev" id="prev-${f.uid}">Toca para chatear</div>
+      <div class="cprev" id="prev-${f.uid}">${t('chatTap')}</div>
     </div>
     <div class="ctime">
       <div class="unread-dot" id="unread-${f.uid}"></div>
@@ -1357,12 +1550,14 @@ window.showScreen=function(name){
 // ── PERFIL ──
 let viewingFriendUid=null;
 
-function calcStats(name){
+function calcStats(uid, nameForFallback){
+  // uid: UID del usuario a calcular. nameForFallback: nombre actual (solo para jugadores sin UID en BD antigua)
   let partidas=0,victorias=0,mejorRel=null,mejorMapa='',totalHio=0;
   const rivalWins={},mapWins={};
   games.forEach(g=>{
     const players=g.players||[];
-    const me=players.find(p=>p.name===name);
+    // Buscar al jugador: primero por UID, luego por nombre actual
+    const me=players.find(p=>(uid&&p.uid===uid)||(p.name===nameForFallback));
     if(!me)return;
     partidas++;
     if(me.hio)totalHio+=Number(me.hio)||0;
@@ -1370,11 +1565,15 @@ function calcStats(name){
     if(mejorRel===null||rel<mejorRel){mejorRel=rel;mejorMapa=g.map||'';}
     const minShots=Math.min(...players.map(p=>Number(p.shots)||999));
     const winners=players.filter(p=>Number(p.shots)===minShots);
-    if(winners.length===1&&winners[0].name===name){
+    const iWon=winners.length===1&&((uid&&winners[0].uid===uid)||(winners[0].name===nameForFallback));
+    if(iWon){
       victorias++;
       mapWins[g.map||'?']=(mapWins[g.map||'?']||0)+1;
       players.forEach(p=>{
-        if(p.name!==name)rivalWins[p.name]=(rivalWins[p.name]||0)+1;
+        // No contar como rival al propio jugador
+        if((uid&&p.uid===uid)||(p.name===nameForFallback))return;
+        const pn=getPlayerDisplayName(p);
+        rivalWins[pn]=(rivalWins[pn]||0)+1;
       });
     }
   });
@@ -1420,10 +1619,11 @@ function renderProfile(isOwn=true, friendData=null){
   document.getElementById('avatar-click-wrap').onclick=isOwn?()=>document.getElementById('avatar-file').click():null;
 
   // Título stats
-  document.getElementById('stats-title').textContent=isOwn?'Mis estadísticas':'Estadísticas';
+  document.getElementById('stats-title').textContent=isOwn?t('myStats'):t('statsOf');
 
   document.getElementById('profile-display-name').textContent=name;
-  if(isOwn)document.getElementById('profile-name-input').value=name;
+  const nameDisplay=document.getElementById('profile-name-input-display');
+  if(nameDisplay)nameDisplay.textContent=name;
 
   // Avatar
   const avatarDiv=document.getElementById('profile-avatar-display');
@@ -1435,7 +1635,8 @@ function renderProfile(isOwn=true, friendData=null){
     avatarDiv.style.color='#53d8fb';
   }
 
-  renderStatsUI(calcStats(name));
+  const profileUid=isOwn?currentUser.uid:(friendData?.uid||null);
+  renderStatsUI(calcStats(profileUid, name));
 }
 
 window.openFriendProfile=async function(uid){
@@ -1451,42 +1652,6 @@ window.openFriendProfile=async function(uid){
   document.getElementById('nav-perfil').classList.add('active');
   document.getElementById('fab').style.display='none';
   renderProfile(false,fd);
-};
-
-window.saveProfileName=async function(){
-  const newName=document.getElementById('profile-name-input').value.trim();
-  if(!newName)return toast(t('toastWriteName'));
-  const oldName=currentUser._profile?.name||currentUser.displayName||'';
-  if(newName===oldName)return toast(t('toastSameName'));
-  try{
-    // 1. Actualizar doc del usuario
-    await updateDoc(doc(db,'users',currentUser.uid),{name:newName});
-    currentUser._profile={...currentUser._profile,name:newName};
-    document.getElementById('profile-display-name').textContent=newName;
-    const topName=document.getElementById('topbar-user');
-    topName.innerHTML=`${av(newName,0)}<span style="font-size:12px;color:var(--txt2)">${esc(newName)}</span>`;
-
-    // 2. Actualizar nombre en todas las partidas donde aparece
-    const snap=await getDocs(collection(db,'games'));
-    const batch=[];
-    snap.docs.forEach(d=>{
-      const g=d.data();
-      const players=g.players||[];
-      const idx=players.findIndex(p=>p.name===oldName);
-      if(idx!==-1){
-        const updated=[...players];
-        updated[idx]={...updated[idx],name:newName};
-        batch.push(updateDoc(doc(db,'games',d.id),{players:updated}));
-      }
-    });
-    if(batch.length){
-      await Promise.all(batch);
-      toast(`Nombre actualizado en ${batch.length} partida${batch.length>1?'s':''} ✓`);
-    }else{
-      toast('Nombre actualizado ✓');
-    }
-    loadGames();
-  }catch(e){toast('Error al guardar');}
 };
 
 window.handleAvatarChange=async function(input){
@@ -1566,6 +1731,22 @@ const LANGS={
     toastNotFound:'No se encontró ese usuario',
     noPending:'No hay solicitudes pendientes',
     statIn:'en',
+    together:'juntos',
+    mapResults:'Resultados por mapa',
+    noGamesYet:'No han jugado juntos aún',
+    noWinners:'No hay ganadores aún',
+    win1:'victoria',
+    wins:'victorias',
+    draw:'empate',
+    historialTitle:'Historial',
+    historialMeta:'Cara a cara entre jugadores',
+    usernameLabel:'Nombre de usuario',
+    nameLocked:'Fijo',
+    nameLockedHint:'El nombre de usuario no se puede cambiar una vez creada la cuenta.',
+    registerUsernameLabel:'Elige tu nombre de usuario',
+    registerUsernameHint:'⚠️ Este nombre no podrá cambiarse después.',
+    ganadoresTitle:'Gana<span style="color:var(--acc2)">dores</span>',
+    amigosTitle:'Ami<span style="color:var(--acc2)">gos</span>',
   },
   en:{
     appSub:'Track your\nWalkabout Mini Golf games',
@@ -1622,6 +1803,22 @@ const LANGS={
     toastNotFound:'User not found',
     noPending:'No pending requests',
     statIn:'on',
+    together:'together',
+    mapResults:'Results by map',
+    noGamesYet:'No games played together yet',
+    noWinners:'No winners yet',
+    win1:'win',
+    wins:'wins',
+    draw:'draw',
+    historialTitle:'History',
+    historialMeta:'Head-to-head between players',
+    usernameLabel:'Username',
+    nameLocked:'Fixed',
+    nameLockedHint:'Your username cannot be changed once your account is created.',
+    registerUsernameLabel:'Choose your username',
+    registerUsernameHint:'⚠️ This name cannot be changed later.',
+    ganadoresTitle:'Win<span style="color:var(--acc2)">ners</span>',
+    amigosTitle:'Frie<span style="color:var(--acc2)">nds</span>',
   },
   pt:{
     appSub:'Registre suas partidas de\nWalkabout Mini Golf',
@@ -1678,6 +1875,22 @@ const LANGS={
     toastNotFound:'Usuário não encontrado',
     noPending:'Sem solicitações pendentes',
     statIn:'em',
+    together:'juntos',
+    mapResults:'Resultados por mapa',
+    noGamesYet:'Ainda não jogaram juntos',
+    noWinners:'Sem vencedores ainda',
+    win1:'vitória',
+    wins:'vitórias',
+    draw:'empate',
+    historialTitle:'Histórico',
+    historialMeta:'Frente a frente entre jogadores',
+    usernameLabel:'Nome de usuário',
+    nameLocked:'Fixo',
+    nameLockedHint:'O nome de usuário não pode ser alterado após a criação da conta.',
+    registerUsernameLabel:'Escolha seu nome de usuário',
+    registerUsernameHint:'⚠️ Este nome não poderá ser alterado depois.',
+    ganadoresTitle:'Vence<span style="color:var(--acc2)">dores</span>',
+    amigosTitle:'Ami<span style="color:var(--acc2)">gos</span>',
   }
 };
 let currentLang=localStorage.getItem('wg_lang')||'es';
@@ -1697,12 +1910,12 @@ function applyLang(){
   const loginBtn=document.querySelector('.btn-primary[onclick="loginEmail()"]');if(loginBtn)loginBtn.textContent=t('loginBtn');
   const tog=document.getElementById('auth-toggle');
   if(tog)tog.innerHTML=`${t('loginToggle')} <span style="color:var(--acc2)" onclick="toggleRegister()">${t('loginRegister')}</span>`;
+  s('lbl-register-username', t('registerUsernameLabel'));
+  s('lbl-register-username-hint', t('registerUsernameHint'));
 
   // Placeholders
   p('search-games', t('searchGame'));
   p('rank-search', t('searchPlayer'));
-  p('chat-input', t('msgPlaceholder'));
-  p('profile-name-input', t('displayName'));
 
   // Nav
   s('nav-partidas-lbl', t('navPartidas'));
@@ -1729,9 +1942,11 @@ function applyLang(){
   const addPlayerBtn=document.getElementById('btn-add-player');if(addPlayerBtn)addPlayerBtn.textContent=t('addPlayerBtn');
 
   // Profile screen
+  s('perfil-topbar-title', `👤 ${t('navPerfil')}`);
   s('stats-title', t('myStats'));
-  s('lbl-display-name', t('displayName'));
-  const saveNameBtn=document.getElementById('btn-save-name');if(saveNameBtn)saveNameBtn.textContent=t('saveBtn');
+  s('lbl-display-name', t('usernameLabel'));
+  s('lbl-name-fixed', t('nameLocked'));
+  s('lbl-name-fixed-hint', t('nameLockedHint'));
   s('lbl-stat-partidas', t('statPartidas'));
   s('lbl-stat-victorias', t('statVictorias'));
   s('lbl-stat-mejor', t('statMejor'));
@@ -1747,6 +1962,22 @@ function applyLang(){
 
   // Loading
   s('loading-text', t('loading'));
+
+  // H2H screen
+  s('h2h-title-lbl', t('historialTitle'));
+  s('h2h-meta-lbl', t('historialMeta'));
+  // Ganadores & Amigos titles (use innerHTML for colored spans)
+  h('ganadores-title','🥇 '+t('ganadoresTitle'));
+  h('amigos-title','👥 '+t('amigosTitle'));
+  // Search maps placeholder
+  const mapSearch=document.querySelector('#s-ganadores input');
+  if(mapSearch)mapSearch.placeholder=t('searchMap');
+  // Friends search placeholder
+  const friendSearch=document.querySelector('#s-amigos input');
+  if(friendSearch)friendSearch.placeholder=t('searchFriend')||t('searchPlayer');
+  // Re-render dynamic screens to pick up translations
+  if(games.length){renderGames(games);renderRanking();renderWinners();}
+  renderChatList();renderFriendsList();
 
   // lang buttons highlight
   document.querySelectorAll('.lang-btn').forEach(b=>{
