@@ -532,7 +532,7 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
         <div id="lbl-display-name" style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">Nombre de usuario</div>
         <div style="display:flex;align-items:center;gap:10px">
           <div id="profile-name-input-display" style="flex:1;background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:11px;padding:10px 13px;color:var(--txt);font-size:14px;font-family:var(--fb)"></div>
-          <div style="font-size:11px;color:var(--txt2);display:flex;align-items:center;gap:4px;flex-shrink:0">🔒 <span id="lbl-name-fixed">Fijo</span></div>
+          <div style="font-size:14px;color:var(--txt2);flex-shrink:0">🔒</div>
         </div>
         <div id="lbl-name-fixed-hint" style="font-size:11px;color:var(--txt2);margin-top:8px">El nombre de usuario no se puede cambiar una vez creada la cuenta.</div>
       </div>
@@ -1741,7 +1741,6 @@ const LANGS={
     historialTitle:'Historial',
     historialMeta:'Cara a cara entre jugadores',
     usernameLabel:'Nombre de usuario',
-    nameLocked:'Fijo',
     nameLockedHint:'El nombre de usuario no se puede cambiar una vez creada la cuenta.',
     registerUsernameLabel:'Elige tu nombre de usuario',
     registerUsernameHint:'⚠️ Este nombre no podrá cambiarse después.',
@@ -1813,7 +1812,6 @@ const LANGS={
     historialTitle:'History',
     historialMeta:'Head-to-head between players',
     usernameLabel:'Username',
-    nameLocked:'Fixed',
     nameLockedHint:'Your username cannot be changed once your account is created.',
     registerUsernameLabel:'Choose your username',
     registerUsernameHint:'⚠️ This name cannot be changed later.',
@@ -1885,7 +1883,6 @@ const LANGS={
     historialTitle:'Histórico',
     historialMeta:'Frente a frente entre jogadores',
     usernameLabel:'Nome de usuário',
-    nameLocked:'Fixo',
     nameLockedHint:'O nome de usuário não pode ser alterado após a criação da conta.',
     registerUsernameLabel:'Escolha seu nome de usuário',
     registerUsernameHint:'⚠️ Este nome não poderá ser alterado depois.',
@@ -1945,7 +1942,6 @@ function applyLang(){
   s('perfil-topbar-title', `👤 ${t('navPerfil')}`);
   s('stats-title', t('myStats'));
   s('lbl-display-name', t('usernameLabel'));
-  s('lbl-name-fixed', t('nameLocked'));
   s('lbl-name-fixed-hint', t('nameLockedHint'));
   s('lbl-stat-partidas', t('statPartidas'));
   s('lbl-stat-victorias', t('statVictorias'));
