@@ -1,6 +1,8 @@
-const CACHE = 'walkgolf-v3';
+const CACHE = 'walkgolf-v4';
+const ASSETS = ['/', '/index.html'];
 
 self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
@@ -17,7 +19,6 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = e.request.url;
   if (url.includes('firestore') || url.includes('firebase') || url.includes('cloudinary') || url.includes('googleapis') || url.includes('gstatic')) return;
-
   e.respondWith(
     fetch(e.request)
       .then(res => {
