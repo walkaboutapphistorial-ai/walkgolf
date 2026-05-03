@@ -1,13 +1,6 @@
-const CACHE = 'walkgolf-v2';
-const ASSETS = [
-  '/walkgolf/',
-  '/walkgolf/index.html'
-];
+const CACHE = 'walkgolf-v3';
 
 self.addEventListener('install', e => {
-  e.waitUntil(
-    caches.open(CACHE).then(c => c.addAll(ASSETS))
-  );
   self.skipWaiting();
 });
 
