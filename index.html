@@ -751,21 +751,30 @@ function loadGames(){
 let friendsUnsub=null;
 function loadFriends(){
   if(friendsUnsub)friendsUnsub();
-  friendsUnsub=onSnapshot(doc(db,'users',currentUser.uid),async snap=>{
-    const data=snap.data();
+  // Escuchar solicitudes aceptadas en ambas direcciones
+  const qTo=query(collection(db,'friendRequests'),where('to','==',currentUser.uid),where('status','==','accepted'));
+  const qFrom=query(collection(db,'friendRequests'),where('from','==',currentUser.uid),where('status','==','accepted'));
+
+  async function rebuildFriends(){
+    const [snapTo,snapFrom]=await Promise.all([getDocs(qTo),getDocs(qFrom)]);
+    const uidSet=new Set();
+    snapTo.docs.forEach(d=>uidSet.add(d.data().from));
+    snapFrom.docs.forEach(d=>uidSet.add(d.data().to));
     friends=[];
-    if(data?.friends?.length){
-      for(const fid of data.friends){
-        const fs=await getDoc(doc(db,'users',fid));
-        if(fs.exists())friends.push({uid:fid,...fs.data()});
-      }
+    for(const fid of uidSet){
+      const fs=await getDoc(doc(db,'users',fid));
+      if(fs.exists())friends.push({uid:fid,...fs.data()});
     }
     renderFriendsList();
     renderChatList();
     populateFriendSelect();
     setupUnreadListeners();
     loadGames();
-  });
+  }
+
+  // Listener en tiempo real sobre solicitudes aceptadas
+  friendsUnsub=onSnapshot(qTo,()=>rebuildFriends());
+  onSnapshot(qFrom,()=>rebuildFriends());
   loadPendingRequests();
 }
 
@@ -830,20 +839,17 @@ function loadPendingRequests(){
   });
 }
 
-// FIX: acceptRequest ahora recibe también fromName, actualiza correctamente y recarga amigos
+// acceptRequest: solo actualiza el estado de la solicitud y el propio usuario
 window.acceptRequest=async function(reqId,fromUid,fromName){
   try{
+    // Solo actualizamos lo que tenemos permiso: la solicitud y nuestro propio doc
     await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
     await updateDoc(doc(db,'users',currentUser.uid),{friends:arrayUnion(fromUid)});
-    await updateDoc(doc(db,'users',fromUid),{friends:arrayUnion(currentUser.uid)});
     // Quitar la fila visualmente de inmediato
     const row=document.getElementById('req-row-'+reqId);
     if(row)row.remove();
     toast(`¡${fromName} es ahora tu amigo! 🎉`);
     closeOverlay('o-pending');
-    // FIX: el onSnapshot de loadFriends detecta el cambio automáticamente
-    // porque ya hicimos updateDoc en users/{uid}. No hace falta llamar loadFriends().
-    // Pero forzamos también la recarga de partidas por si acaso:
     setTimeout(()=>loadGames(),1000);
   }catch(e){
     console.error('Error aceptando solicitud:',e);
