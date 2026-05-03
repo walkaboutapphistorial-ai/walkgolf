@@ -216,6 +216,11 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 </div>
 
 <div class="auth-screen" id="auth">
+  <div style="display:flex;gap:6px;position:absolute;top:16px;right:16px">
+    <button class="lang-btn" data-lang="es" onclick="setLang('es')" style="background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;font-family:var(--fb);color:var(--txt2)">ES</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;font-family:var(--fb);color:var(--txt2)">EN</button>
+    <button class="lang-btn" data-lang="pt" onclick="setLang('pt')" style="background:transparent;border:1px solid transparent;border-radius:8px;padding:4px 8px;font-size:12px;cursor:pointer;font-family:var(--fb);color:var(--txt2)">PT</button>
+  </div>
   <div class="auth-logo">Walk<span>Golf</span></div>
   <div class="auth-sub">Registra tus partidas de<br>Walkabout Mini Golf</div>
   <button class="social-btn" onclick="loginGoogle()">
@@ -578,9 +583,19 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
       </div>
 
       <!-- Cerrar sesión (solo perfil propio) -->
-      <button id="perfil-signout" onclick="window.doSignOut()" style="width:100%;background:rgba(233,69,96,0.08);border:1px solid rgba(233,69,96,0.2);color:var(--acc);border-radius:13px;padding:12px;font-family:var(--fb);font-size:14px;cursor:pointer;margin-bottom:20px">
+      <button id="perfil-signout" onclick="window.doSignOut()" style="width:100%;background:rgba(233,69,96,0.08);border:1px solid rgba(233,69,96,0.2);color:var(--acc);border-radius:13px;padding:12px;font-family:var(--fb);font-size:14px;cursor:pointer;margin-bottom:12px">
         Cerrar sesión
       </button>
+
+      <!-- Idioma (solo perfil propio) -->
+      <div id="perfil-lang" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:14px;margin-bottom:20px;text-align:center">
+        <div style="font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;font-weight:600;margin-bottom:10px">Idioma / Language</div>
+        <div style="display:flex;gap:8px;justify-content:center">
+          <button class="lang-btn" data-lang="es" onclick="setLang('es')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇦🇷 ES</button>
+          <button class="lang-btn" data-lang="en" onclick="setLang('en')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇺🇸 EN</button>
+          <button class="lang-btn" data-lang="pt" onclick="setLang('pt')" style="background:transparent;border:1px solid transparent;border-radius:10px;padding:8px 18px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);color:var(--txt2)">🇧🇷 PT</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -695,6 +710,7 @@ function enterApp(){
   document.getElementById('topbar-user').onclick=()=>showScreen('perfil');
   loadFriends();
   requestNotificationPermission();
+  applyLang();
 }
 
 window.doSignOut=async function(){
@@ -751,7 +767,6 @@ function loadGames(){
 let friendsUnsub=null;
 function loadFriends(){
   if(friendsUnsub)friendsUnsub();
-  // Escuchar solicitudes aceptadas en ambas direcciones
   const qTo=query(collection(db,'friendRequests'),where('to','==',currentUser.uid),where('status','==','accepted'));
   const qFrom=query(collection(db,'friendRequests'),where('from','==',currentUser.uid),where('status','==','accepted'));
 
@@ -760,6 +775,8 @@ function loadFriends(){
     const uidSet=new Set();
     snapTo.docs.forEach(d=>uidSet.add(d.data().from));
     snapFrom.docs.forEach(d=>uidSet.add(d.data().to));
+    // Eliminar el propio uid por si acaso
+    uidSet.delete(currentUser.uid);
     friends=[];
     for(const fid of uidSet){
       const fs=await getDoc(doc(db,'users',fid));
@@ -772,7 +789,6 @@ function loadFriends(){
     loadGames();
   }
 
-  // Listener en tiempo real sobre solicitudes aceptadas
   friendsUnsub=onSnapshot(qTo,()=>rebuildFriends());
   onSnapshot(qFrom,()=>rebuildFriends());
   loadPendingRequests();
@@ -842,18 +858,16 @@ function loadPendingRequests(){
 // acceptRequest: solo actualiza el estado de la solicitud y el propio usuario
 window.acceptRequest=async function(reqId,fromUid,fromName){
   try{
-    // Solo actualizamos lo que tenemos permiso: la solicitud y nuestro propio doc
     await updateDoc(doc(db,'friendRequests',reqId),{status:'accepted'});
     await updateDoc(doc(db,'users',currentUser.uid),{friends:arrayUnion(fromUid)});
-    // Quitar la fila visualmente de inmediato
     const row=document.getElementById('req-row-'+reqId);
     if(row)row.remove();
-    toast(`¡${fromName} es ahora tu amigo! 🎉`);
+    toast(`¡${fromName} ${t('toastFriendAdded')}`);
     closeOverlay('o-pending');
     setTimeout(()=>loadGames(),1000);
   }catch(e){
     console.error('Error aceptando solicitud:',e);
-    toast('Error al aceptar. Intenta de nuevo.');
+    toast(t('toastErrorAccept'));
   }
 };
 
@@ -861,34 +875,31 @@ window.searchUser=async function(){
   const val=document.getElementById('add-friend-input').value.trim();
   const el=document.getElementById('search-result');
   if(!val)return;
-  // Buscar por nombre
   let snap=await getDocs(query(collection(db,'users'),where('name','==',val)));
-  // Si no encuentra por nombre, buscar por email
   if(snap.empty){
     snap=await getDocs(query(collection(db,'users'),where('email','==',val.toLowerCase())));
   }
-  if(snap.empty){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center;padding:12px">No se encontró ese usuario</div>';return;}
+  if(snap.empty){el.innerHTML=`<div style="color:var(--txt2);font-size:13px;text-align:center;padding:12px">${t('toastNotFound')}</div>`;return;}
   const found=snap.docs[0];
-  if(found.id===currentUser.uid){el.innerHTML='<div style="color:var(--txt2);font-size:13px;text-align:center;padding:12px">Ese eres tú 😄</div>';return;}
+  if(found.id===currentUser.uid){el.innerHTML=`<div style="color:var(--txt2);font-size:13px;text-align:center;padding:12px">${t('toastYou')}</div>`;return;}
   const fd=found.data();
   el.innerHTML=`<div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:13px;display:flex;align-items:center;gap:10px">
     ${av(fd.name,0)}
     <div><div style="font-size:14px;font-weight:500">${esc(fd.name)}</div><div style="font-size:12px;color:var(--txt2)">${esc(fd.email||'')}</div></div>
-    <button class="faction btn-accept" style="margin-left:auto" onclick="sendRequest('${found.id}','${esc(fd.name)}')">Enviar</button>
+    <button class="faction btn-accept" style="margin-left:auto" onclick="sendRequest('${found.id}','${esc(fd.name)}')">${t('sendRequest')}</button>
   </div>`;
 };
 
 window.sendRequest=async function(toUid,toName){
   const myName=currentUser._profile?.name||currentUser.displayName||'Alguien';
-  // Verificar si ya hay solicitud pendiente
   const existing=await getDocs(query(collection(db,'friendRequests'),
     where('from','==',currentUser.uid),where('to','==',toUid),where('status','==','pending')));
-  if(!existing.empty){toast('Ya enviaste una solicitud a este usuario');return;}
+  if(!existing.empty){toast(t('toastAlreadySent'));return;}
   await addDoc(collection(db,'friendRequests'),{
     from:currentUser.uid,fromName:myName,
     to:toUid,toName,status:'pending',createdAt:serverTimestamp()
   });
-  toast('¡Solicitud enviada!');
+  toast(t('toastRequestSent'));
   closeOverlay('o-add');
   document.getElementById('add-friend-input').value='';
   document.getElementById('search-result').innerHTML='';
@@ -1406,6 +1417,7 @@ function renderProfile(isOwn=true, friendData=null){
   document.getElementById('perfil-edit-name').style.display=isOwn?'block':'none';
   document.getElementById('perfil-donar').style.display=isOwn?'block':'none';
   document.getElementById('perfil-signout').style.display=isOwn?'block':'none';
+  document.getElementById('perfil-lang').style.display=isOwn?'block':'none';
   document.getElementById('avatar-edit-icon').style.display=isOwn?'flex':'none';
   document.getElementById('avatar-click-wrap').style.cursor=isOwn?'pointer':'default';
   document.getElementById('avatar-click-wrap').onclick=isOwn?()=>document.getElementById('avatar-file').click():null;
@@ -1446,21 +1458,44 @@ window.openFriendProfile=async function(uid){
 
 window.saveProfileName=async function(){
   const newName=document.getElementById('profile-name-input').value.trim();
-  if(!newName)return toast('Escribe un nombre');
+  if(!newName)return toast(t('toastWriteName'));
+  const oldName=currentUser._profile?.name||currentUser.displayName||'';
+  if(newName===oldName)return toast(t('toastSameName'));
   try{
+    // 1. Actualizar doc del usuario
     await updateDoc(doc(db,'users',currentUser.uid),{name:newName});
     currentUser._profile={...currentUser._profile,name:newName};
     document.getElementById('profile-display-name').textContent=newName;
     const topName=document.getElementById('topbar-user');
     topName.innerHTML=`${av(newName,0)}<span style="font-size:12px;color:var(--txt2)">${esc(newName)}</span>`;
-    toast('Nombre actualizado ✓');
+
+    // 2. Actualizar nombre en todas las partidas donde aparece
+    const snap=await getDocs(collection(db,'games'));
+    const batch=[];
+    snap.docs.forEach(d=>{
+      const g=d.data();
+      const players=g.players||[];
+      const idx=players.findIndex(p=>p.name===oldName);
+      if(idx!==-1){
+        const updated=[...players];
+        updated[idx]={...updated[idx],name:newName};
+        batch.push(updateDoc(doc(db,'games',d.id),{players:updated}));
+      }
+    });
+    if(batch.length){
+      await Promise.all(batch);
+      toast(`Nombre actualizado en ${batch.length} partida${batch.length>1?'s':''} ✓`);
+    }else{
+      toast('Nombre actualizado ✓');
+    }
+    loadGames();
   }catch(e){toast('Error al guardar');}
 };
 
 window.handleAvatarChange=async function(input){
   const file=input.files[0];
   if(!file)return;
-  toast('Subiendo foto...');
+  toast(t('toastUploading'));
   try{
     const formData=new FormData();
     formData.append('file',file);
@@ -1470,14 +1505,237 @@ window.handleAvatarChange=async function(input){
     const data=await res.json();
     const url=data.secure_url;
     if(!url)throw new Error('Sin URL');
-    // Guardar URL en Firestore
     await updateDoc(doc(db,'users',currentUser.uid),{avatarUrl:url});
     currentUser._profile={...currentUser._profile,avatarUrl:url};
-    // Mostrar
     document.getElementById('profile-avatar-display').innerHTML=`<img src="${url}" class="profile-avatar-img">`;
-    toast('Foto actualizada ✓');
-  }catch(e){toast('Error al subir la foto');}
+    toast(t('toastPhotoUpdated'));
+  }catch(e){toast(t('toastErrorPhoto'));}
 };
+
+// ── IDIOMAS ──
+const LANGS={
+  es:{
+    appSub:'Registra tus partidas de\nWalkabout Mini Golf',
+    loginGoogle:'Continuar con Google',
+    loginOr:'o con email',
+    loginBtn:'Entrar',
+    loginToggle:'¿No tienes cuenta?',
+    loginRegister:'Regístrate',
+    loginHaveAccount:'¿Ya tienes cuenta?',
+    loginSignIn:'Inicia sesión',
+    searchGame:'Buscar partida...',
+    searchPlayer:'Buscar jugador...',
+    searchMap:'Buscar por mapa...',
+    backPartidas:'Partidas',
+    deleteGame:'Eliminar esta partida',
+    addPlayer:'+ Agregar jugador',
+    addPlayerBtn:'Agregar jugador',
+    playerLabel:'Jugador',
+    shotsLabel:'Golpes',
+    hioLabel:'H-en-1',
+    h2hBtn:'⚔️ Ver historial cara a cara',
+    navPartidas:'Partidas',navRanking:'Ranking',navGanadores:'Ganadores',navAmigos:'Amigos',navChat:'Chat',navPerfil:'Perfil',
+    pendingBtn:'Solicitudes pendientes',
+    accept:'Aceptar',
+    searchFriend:'Buscar amigo...',
+    addFriendBtn:'+ Agregar',
+    sendRequest:'Enviar',
+    noFriends:'Aún no tienes amigos agregados',
+    chatTap:'Toca para chatear',
+    msgPlaceholder:'Mensaje...',
+    profileTitle:'Perfil',
+    displayName:'Nombre para mostrar',
+    saveBtn:'Guardar',
+    myStats:'Mis estadísticas',
+    statsOf:'Estadísticas',
+    statPartidas:'Partidas',statVictorias:'Victorias',statMejor:'Mejor score',statHio:'Holes-in-1',statRival:'Rival favorito',statBestMap:'Mapa con más victorias',
+    donateText:'¿Te gusta la app? Apoyá el proyecto 🙌',
+    signOut:'Cerrar sesión',
+    viewProfile:'Ver perfil →',
+    loading:'Cargando...',
+    toastNameUpdated:'Nombre actualizado ✓',
+    toastPhotoUpdated:'Foto actualizada ✓',
+    toastUploading:'Subiendo foto...',
+    toastErrorPhoto:'Error al subir la foto',
+    toastErrorSave:'Error al guardar',
+    toastSameName:'Es el mismo nombre',
+    toastWriteName:'Escribe un nombre',
+    toastFriendAdded:'¡es ahora tu amigo! 🎉',
+    toastRequestSent:'¡Solicitud enviada!',
+    toastAlreadySent:'Ya enviaste una solicitud a este usuario',
+    toastErrorAccept:'Error al aceptar. Intenta de nuevo.',
+    toastYou:'Ese eres tú 😄',
+    toastNotFound:'No se encontró ese usuario',
+    noPending:'No hay solicitudes pendientes',
+    statIn:'en',
+  },
+  en:{
+    appSub:'Track your\nWalkabout Mini Golf games',
+    loginGoogle:'Continue with Google',
+    loginOr:'or with email',
+    loginBtn:'Sign in',
+    loginToggle:"Don't have an account?",
+    loginRegister:'Sign up',
+    loginHaveAccount:'Already have an account?',
+    loginSignIn:'Sign in',
+    searchGame:'Search game...',
+    searchPlayer:'Search player...',
+    searchMap:'Search by map...',
+    backPartidas:'Games',
+    deleteGame:'Delete this game',
+    addPlayer:'+ Add player',
+    addPlayerBtn:'Add player',
+    playerLabel:'Player',
+    shotsLabel:'Shots',
+    hioLabel:'H-in-1',
+    h2hBtn:'⚔️ Head-to-head history',
+    navPartidas:'Games',navRanking:'Ranking',navGanadores:'Winners',navAmigos:'Friends',navChat:'Chat',navPerfil:'Profile',
+    pendingBtn:'Pending requests',
+    accept:'Accept',
+    searchFriend:'Search friend...',
+    addFriendBtn:'+ Add',
+    sendRequest:'Send',
+    noFriends:'No friends yet',
+    chatTap:'Tap to chat',
+    msgPlaceholder:'Message...',
+    profileTitle:'Profile',
+    displayName:'Display name',
+    saveBtn:'Save',
+    myStats:'My stats',
+    statsOf:'Stats',
+    statPartidas:'Games',statVictorias:'Wins',statMejor:'Best score',statHio:'Holes-in-1',statRival:'Favourite rival',statBestMap:'Best map',
+    donateText:'Like the app? Support the project 🙌',
+    signOut:'Sign out',
+    viewProfile:'View profile →',
+    loading:'Loading...',
+    toastNameUpdated:'Name updated ✓',
+    toastPhotoUpdated:'Photo updated ✓',
+    toastUploading:'Uploading photo...',
+    toastErrorPhoto:'Error uploading photo',
+    toastErrorSave:'Error saving',
+    toastSameName:'Same name',
+    toastWriteName:'Enter a name',
+    toastFriendAdded:'is now your friend! 🎉',
+    toastRequestSent:'Request sent!',
+    toastAlreadySent:'You already sent a request to this user',
+    toastErrorAccept:'Error accepting. Try again.',
+    toastYou:'That is you 😄',
+    toastNotFound:'User not found',
+    noPending:'No pending requests',
+    statIn:'on',
+  },
+  pt:{
+    appSub:'Registre suas partidas de\nWalkabout Mini Golf',
+    loginGoogle:'Continuar com Google',
+    loginOr:'ou com email',
+    loginBtn:'Entrar',
+    loginToggle:'Não tem uma conta?',
+    loginRegister:'Cadastre-se',
+    loginHaveAccount:'Já tem uma conta?',
+    loginSignIn:'Entrar',
+    searchGame:'Buscar partida...',
+    searchPlayer:'Buscar jogador...',
+    searchMap:'Buscar por mapa...',
+    backPartidas:'Partidas',
+    deleteGame:'Excluir esta partida',
+    addPlayer:'+ Adicionar jogador',
+    addPlayerBtn:'Adicionar jogador',
+    playerLabel:'Jogador',
+    shotsLabel:'Tacadas',
+    hioLabel:'H-em-1',
+    h2hBtn:'⚔️ Ver histórico frente a frente',
+    navPartidas:'Partidas',navRanking:'Ranking',navGanadores:'Vencedores',navAmigos:'Amigos',navChat:'Chat',navPerfil:'Perfil',
+    pendingBtn:'Solicitações pendentes',
+    accept:'Aceitar',
+    searchFriend:'Buscar amigo...',
+    addFriendBtn:'+ Adicionar',
+    sendRequest:'Enviar',
+    noFriends:'Ainda não tem amigos adicionados',
+    chatTap:'Toque para conversar',
+    msgPlaceholder:'Mensagem...',
+    profileTitle:'Perfil',
+    displayName:'Nome para exibição',
+    saveBtn:'Salvar',
+    myStats:'Minhas estatísticas',
+    statsOf:'Estatísticas',
+    statPartidas:'Partidas',statVictorias:'Vitórias',statMejor:'Melhor score',statHio:'Holes-in-1',statRival:'Rival favorito',statBestMap:'Melhor mapa',
+    donateText:'Gostou do app? Apoie o projeto 🙌',
+    signOut:'Sair',
+    viewProfile:'Ver perfil →',
+    loading:'Carregando...',
+    toastNameUpdated:'Nome atualizado ✓',
+    toastPhotoUpdated:'Foto atualizada ✓',
+    toastUploading:'Enviando foto...',
+    toastErrorPhoto:'Erro ao enviar foto',
+    toastErrorSave:'Erro ao salvar',
+    toastSameName:'É o mesmo nome',
+    toastWriteName:'Escreva um nome',
+    toastFriendAdded:'agora é seu amigo! 🎉',
+    toastRequestSent:'Solicitação enviada!',
+    toastAlreadySent:'Você já enviou uma solicitação para este usuário',
+    toastErrorAccept:'Erro ao aceitar. Tente novamente.',
+    toastYou:'Esse é você 😄',
+    toastNotFound:'Usuário não encontrado',
+    noPending:'Sem solicitações pendentes',
+    statIn:'em',
+  }
+};
+let currentLang=localStorage.getItem('wg_lang')||'es';
+function t(k){return LANGS[currentLang]?.[k]||LANGS.es[k]||k;}
+
+function applyLang(){
+  const l=currentLang;
+  // Auth
+  document.querySelector('.auth-sub').innerHTML=t('appSub').replace('\n','<br>');
+  document.querySelector('.social-btn').childNodes[document.querySelector('.social-btn').childNodes.length-1].textContent=' '+t('loginGoogle');
+  document.querySelector('.divider').textContent=t('loginOr');
+  document.querySelector('.btn-primary[onclick="loginEmail()"]').textContent=t('loginBtn');
+  const tog=document.getElementById('auth-toggle');
+  if(tog)tog.innerHTML=`${t('loginToggle')} <span style="color:var(--acc2)" onclick="toggleRegister()">${t('loginRegister')}</span>`;
+  // Search placeholders
+  const sg=document.getElementById('search-games');if(sg)sg.placeholder=t('searchGame');
+  const rk=document.getElementById('rank-search');if(rk)rk.placeholder=t('searchPlayer');
+  // Nav labels
+  ['partidas','ranking','ganadores','amigos','chat','perfil'].forEach(n=>{
+    const el=document.querySelector(`#nav-${n} .nav-lbl`);
+    if(el)el.textContent=t('nav'+n.charAt(0).toUpperCase()+n.slice(1));
+  });
+  // Loading
+  const ld=document.querySelector('.loading div:last-child');if(ld)ld.textContent=t('loading');
+  // Profile
+  const pt=document.getElementById('perfil-topbar-own')?.querySelector('h1');
+  if(pt)pt.innerHTML=`👤 ${t('profileTitle').slice(0,3)}<span>${t('profileTitle').slice(3)}</span>`;
+  const dn=document.querySelector('#perfil-edit-name .sec-title, #perfil-edit-name > div:first-child');
+  const dnLabel=document.querySelector('#perfil-edit-name > div[style*="uppercase"]');
+  if(dnLabel)dnLabel.textContent=t('displayName');
+  const saveBtn=document.querySelector('#perfil-edit-name button');if(saveBtn)saveBtn.textContent=t('saveBtn');
+  const stTitle=document.getElementById('stats-title');if(stTitle)stTitle.textContent=t('myStats');
+  const donateTxt=document.querySelector('#perfil-donar > div:first-child');if(donateTxt)donateTxt.textContent=t('donateText');
+  const soBtn=document.getElementById('perfil-signout');if(soBtn)soBtn.textContent=t('signOut');
+  // Stat labels
+  const statLabels={
+    'stat-partidas':t('statPartidas'),'stat-victorias':t('statVictorias'),
+    'stat-mejor':null,'stat-hio':t('statHio'),'stat-rival':t('statRival'),'stat-best-map':t('statBestMap')
+  };
+  document.querySelectorAll('#s-perfil .game-card, #s-perfil [style*="border-radius:12px"]').forEach(el=>{
+    // update stat subtitles
+  });
+  // lang buttons highlight
+  document.querySelectorAll('.lang-btn').forEach(b=>{
+    b.style.background=b.dataset.lang===l?'rgba(83,216,251,0.2)':'transparent';
+    b.style.color=b.dataset.lang===l?'var(--acc2)':'var(--txt2)';
+    b.style.border=b.dataset.lang===l?'1px solid rgba(83,216,251,0.4)':'1px solid transparent';
+  });
+}
+
+window.setLang=function(l){
+  currentLang=l;
+  localStorage.setItem('wg_lang',l);
+  applyLang();
+};
+
+// Run lang on load
+applyLang();
 
 window.openOverlay=function(id){document.getElementById(id).classList.add('open');};
 window.closeOverlay=function(id){document.getElementById(id).classList.remove('open');};
