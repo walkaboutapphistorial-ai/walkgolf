@@ -57,30 +57,6 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
 .btn-del-card:hover{opacity:1;color:var(--acc)}
 .btn-del-detail{display:flex;align-items:center;gap:6px;margin:10px 16px 4px;background:rgba(233,69,96,0.08);border:1px solid rgba(233,69,96,0.2);color:var(--acc);border-radius:10px;padding:9px 14px;font-size:13px;cursor:pointer;font-family:var(--fb);width:calc(100% - 32px);transition:background .15s}
 .btn-del-detail:hover{background:rgba(233,69,96,0.15)}
-.btn-ai-scan{width:100%;background:linear-gradient(135deg,rgba(83,216,251,0.15),rgba(192,132,252,0.15));border:1px solid rgba(83,216,251,0.3);color:var(--acc2);border-radius:12px;padding:12px 14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;font-family:var(--ff);transition:all .2s}
-.btn-ai-scan:hover{background:linear-gradient(135deg,rgba(83,216,251,0.25),rgba(192,132,252,0.25))}
-.ai-preview{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px;margin-bottom:10px;display:none}
-.ai-preview.show{display:block}
-.ai-preview-img{width:100%;border-radius:8px;margin-bottom:12px;max-height:200px;object-fit:contain;cursor:pointer}
-.ai-confirm-btn{background:var(--acc3);color:#0a1628;border:none;border-radius:10px;padding:10px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);width:100%;margin-top:10px}
-.ai-scanning{text-align:center;padding:20px;color:var(--txt2);font-size:13px}
-.ai-scanning .spinner{margin:0 auto 10px}
-.sc-wrap{overflow-x:auto;margin-bottom:10px}
-.sc-table{width:100%;border-collapse:collapse;font-size:12px;min-width:320px}
-.sc-table th{background:rgba(83,216,251,0.08);color:var(--txt2);padding:6px 8px;text-align:center;font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border)}
-.sc-table th.player-col{text-align:left;min-width:80px}
-.sc-table td{padding:5px 6px;text-align:center;border-bottom:1px solid var(--border)}
-.sc-table td.player-name-cell{text-align:left;font-weight:500;font-size:12px}
-.sc-table td input{width:36px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:4px 2px;color:var(--txt);font-size:12px;text-align:center;font-family:var(--ff);font-weight:700;outline:none}
-.sc-table td input:focus{border-color:var(--acc2);background:rgba(83,216,251,0.1)}
-.sc-table td.total-cell{font-family:var(--ff);font-weight:800;font-size:13px;color:var(--acc2)}
-.sc-table tr:last-child td{border-bottom:none}
-.sc-img-wrap{margin:0 16px 10px;border-radius:12px;overflow:hidden;border:1px solid var(--border);cursor:pointer;position:relative}
-.sc-img-wrap img{width:100%;display:block;max-height:160px;object-fit:cover}
-.sc-img-label{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,0.5);padding:5px 10px;font-size:11px;color:rgba(255,255,255,0.7)}
-.lightbox{position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center}
-.lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border-radius:8px}
-.lightbox-close{position:absolute;top:16px;right:16px;background:none;border:none;color:#fff;font-size:28px;cursor:pointer;line-height:1}
 .sec-title{font-size:11px;color:var(--txt2);letter-spacing:1.5px;text-transform:uppercase;padding:14px 16px 6px;font-weight:600}
 .navbar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:420px;background:rgba(22,33,62,0.97);backdrop-filter:blur(12px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 16px;z-index:100}
 .nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:4px 8px;border-radius:10px;border:none;background:none;transition:all .15s;position:relative}
@@ -299,23 +275,11 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
       <div class="detail-meta" id="d-meta"></div>
     </div>
     <div id="d-banner"></div>
-    <div id="d-scorecard-img"></div>
     <div class="scores-card" id="d-scores"></div>
     <button class="btn-del-detail" onclick="confirmDeleteGame(null,currentGameId)">
       <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
       <span id="lbl-delete-game">Eliminar esta partida</span>
     </button>
-    <div style="margin:10px 16px 0">
-      <input type="file" id="ai-img-input" accept="image/*" style="display:none" onchange="handleAIScan(event)">
-      <button class="btn-ai-scan" onclick="document.getElementById('ai-img-input').click()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        ✨ Escanear marcador con IA
-      </button>
-      <div class="ai-preview" id="ai-preview">
-        <img id="ai-preview-img" class="ai-preview-img" src="" alt="Marcador">
-        <div id="ai-preview-content"></div>
-      </div>
-    </div>
     <div class="add-form">
       <h3 id="lbl-add-player">+ Agregar jugador</h3>
       <div class="inline-grid">
@@ -488,7 +452,6 @@ html,body{height:100%;background:var(--g);color:var(--txt);font-family:var(--fb)
           <option value="Venice|58|60">Venice</option>
           <option value="Tokio|55|55">Tokio</option>
           <option value="Hollywood|56|62">Hollywood</option>
-          <option value="Blokhaven|53|59">Blokhaven</option>
           <option value="Blokhaven|53|59">Blokhaven</option>
         </select>
       </div>
@@ -1145,230 +1108,22 @@ window.openDetail=function(id){
 function refreshDetail(g){
   const sorted=[...(g.players||[])].sort((a,b)=>a.shots-b.shots);
   const w=getWinner(g);
-  // Saved scorecard image
-  const imgWrap=document.getElementById('d-scorecard-img');
-  if(imgWrap){
-    if(g.scorecardUrl){
-      imgWrap.innerHTML=`<div class="sc-img-wrap" onclick="openLightbox('${g.scorecardUrl}')">
-        <img src="${g.scorecardUrl}" alt="Marcador">
-        <div class="sc-img-label">📸 Marcador · toca para ampliar</div>
-      </div>`;
-    }else{imgWrap.innerHTML='';}
-  }
   const banner=document.getElementById('d-banner');
   if(w){const r=w.shots-g.par;const sign=r<0?'':r>0?'+':'E';const wn=getPlayerDisplayName(w);banner.innerHTML=`<div class="winner-banner">🏆 ${esc(wn)} gana con ${w.shots} golpes (${r===0?'E':sign+r})</div>`;}
   else banner.innerHTML='';
   const sc=document.getElementById('d-scores');
   if(!g.players?.length){sc.innerHTML='<div class="empty" style="padding:24px">Agrega jugadores para ver resultados</div>';return;}
-  const hasHoles=sorted.some(p=>p.holes?.length===18);
-  if(hasHoles){
-    const holesPar=Array(18).fill(Math.round(g.par/18));
-    sc.innerHTML=`<div class="sc-wrap" style="padding:8px">
-      <table class="sc-table">
-        <thead>
-          <tr>
-            <th class="player-col">Jugador</th>
-            ${Array.from({length:18},(_,i)=>`<th>${i+1}</th>`).join('')}
-            <th>Tot.</th><th>H1</th>
-          </tr>
-          <tr style="background:rgba(83,216,251,0.04)">
-            <td style="font-size:10px;color:var(--txt2);padding:4px 8px">PAR</td>
-            ${holesPar.map(p=>`<td style="font-size:10px;color:var(--txt2)">${p}</td>`).join('')}
-            <td style="font-size:10px;color:var(--txt2)">${g.par}</td><td></td>
-          </tr>
-        </thead>
-        <tbody>
-          ${sorted.map((p,i)=>{
-            const pn=getPlayerDisplayName(p);
-            const r=p.shots-g.par;const sign=r<0?'':r>0?'+':'E';const cls=r<0?'s-neg':r>0?'s-pos':'';
-            const holes=p.holes||Array(18).fill('');
-            return`<tr style="${i===0?'background:rgba(255,215,0,0.04)':''}">
-              <td class="player-name-cell">${esc(pn)}${i===0?' 🏆':''}</td>
-              ${holes.map((h,hi)=>{
-                const diff=h-holesPar[hi];
-                const hcls=h===1?'color:#ffd700;font-weight:900':diff<0?'color:var(--acc3)':diff>0?'color:var(--acc)':'';
-                return`<td style="font-size:12px;font-weight:700;font-family:var(--ff);${hcls}">${h||''}</td>`;
-              }).join('')}
-              <td class="total-cell">${p.shots}</td>
-              <td style="font-family:var(--ff);font-weight:700;font-size:12px" class="${cls}">${r===0?'E':sign+r}</td>
-            </tr>`;
-          }).join('')}
-        </tbody>
-      </table></div>`;
-  }else{
-    sc.innerHTML=`<div class="score-row hdr"><span>Jugador</span><span style="text-align:right">Golpes</span><span style="text-align:right">Score</span></div>`
-    +sorted.map((p,i)=>{
-      const r=p.shots-g.par;const sign=r<0?'':r>0?'+':'E';const cls=r<0?'s-neg':r>0?'s-pos':'';
-      const pn=getPlayerDisplayName(p);
-      return`<div class="score-row" style="${i===0?'background:rgba(255,215,0,0.05)':''}">
-        <div class="score-name"><div class="av-wrap">${av(pn,i)}</div>${esc(pn)}${i===0?' 🏆':''}</div>
-        <div class="s-shots">${p.shots}</div>
-        <div class="s-rel ${cls}">${r===0?'E':sign+r}</div>
-      </div>`;
-    }).join('');
-  }
+  sc.innerHTML=`<div class="score-row hdr"><span>Jugador</span><span style="text-align:right">Golpes</span><span style="text-align:right">Score</span></div>`
+  +sorted.map((p,i)=>{
+    const r=p.shots-g.par;const sign=r<0?'':r>0?'+':'E';const cls=r<0?'s-neg':r>0?'s-pos':'';
+    const pn=getPlayerDisplayName(p);
+    return`<div class="score-row" style="${i===0?'background:rgba(255,215,0,0.05)':''}">
+      <div class="score-name"><div class="av-wrap">${av(pn,i)}</div>${esc(pn)}${i===0?' 🏆':''}</div>
+      <div class="s-shots">${p.shots}</div>
+      <div class="s-rel ${cls}">${r===0?'E':sign+r}</div>
+    </div>`;
+  }).join('');
 }
-
-// ── IA: ESCANEAR MARCADOR con OpenRouter ──
-const OPENROUTER_KEY='';
-
-window.handleAIScan=async function(event){
-  const file=event.target.files[0];
-  if(!file)return;
-  event.target.value='';
-  const previewBox=document.getElementById('ai-preview');
-  const previewImg=document.getElementById('ai-preview-img');
-  const previewContent=document.getElementById('ai-preview-content');
-  const localUrl=URL.createObjectURL(file);
-  previewImg.src=localUrl;
-  previewImg.onclick=()=>openLightbox(localUrl);
-  previewBox.classList.add('show');
-  previewContent.innerHTML='<div class="ai-scanning"><div class="spinner"></div>Analizando marcador con IA...</div>';
-  try{
-    const base64=await new Promise((res,rej)=>{
-      const reader=new FileReader();
-      reader.onload=()=>res(reader.result.split(',')[1]);
-      reader.onerror=rej;
-      reader.readAsDataURL(file);
-    });
-    window._lastScanDataURL='data:'+file.type+';base64,'+base64;
-    window._lastScanFile=file;
-    const g=games.find(x=>x.id===currentGameId);
-    const par=g?.par||54;
-    const prompt=`Eres un asistente para la app Walkabout Mini Golf. Analiza esta imagen del marcador de golf. El mapa tiene PAR ${par} en 18 hoyos.
-Extrae para CADA JUGADOR: nombre, golpes por hoyo (18 hoyos), total de golpes, hoyos en 1.
-Responde ÚNICAMENTE con JSON válido sin texto extra ni backticks:
-{"players":[{"name":"NombreJugador","holes":[3,4,2,5,3,4,3,2,4,3,5,3,4,2,3,4,5,3],"hio":1}]}
-- "holes" debe tener exactamente 18 números. Si un hoyo no se ve, usa ${Math.round(par/18)}.
-- Si no puedes leer el marcador: {"error":"No se pudo leer el marcador"}`;
-    const response=await fetch('https://openrouter.ai/api/v1/chat/completions',{
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'Authorization':'Bearer '+OPENROUTER_KEY,
-      },
-      body:JSON.stringify({
-        model:'google/gemini-2.0-flash-exp:free',
-        messages:[{
-          role:'user',
-          content:[
-            {type:'image_url',image_url:{url:'data:'+file.type+';base64,'+base64}},
-            {type:'text',text:prompt}
-          ]
-        }]
-      })
-    });
-    const data=await response.json();
-    const text=data.choices?.[0]?.message?.content||'';
-    let parsed;
-    try{
-      let clean=text.replace(/```json|```/g,'').trim();
-      const fb=clean.indexOf('{'),lb=clean.lastIndexOf('}');
-      if(fb!==-1&&lb!==-1)clean=clean.slice(fb,lb+1);
-      parsed=JSON.parse(clean);
-    }catch(e){throw new Error('No se pudo interpretar la respuesta. Intentá con una imagen más clara.');}
-    if(parsed.error){previewContent.innerHTML='<div style="color:var(--acc);text-align:center;padding:12px;font-size:13px">⚠️ '+parsed.error+'</div>';return;}
-    if(!parsed.players?.length){previewContent.innerHTML='<div style="color:var(--acc);text-align:center;padding:12px;font-size:13px">⚠️ No se encontraron jugadores</div>';return;}
-    parsed.players=parsed.players.map(p=>{
-      const h=[...(p.holes||[])];
-      while(h.length<18)h.push(Math.round(par/18));
-      return{...p,holes:h.slice(0,18),hio:p.hio||0};
-    });
-    renderScorecardEditor(parsed.players,par);
-  }catch(e){
-    console.error('AI scan error:',e);
-    previewContent.innerHTML='<div style="color:var(--acc);text-align:center;padding:12px;font-size:13px">⚠️ '+(e.message||'Error al procesar la imagen')+'</div>';
-  }
-};
-
-function renderScorecardEditor(players,par){
-  const previewContent=document.getElementById('ai-preview-content');
-  previewContent.innerHTML=`
-  <div style="font-size:11px;color:var(--txt2);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600">✏️ Revisá y editá si hay errores</div>
-  <div class="sc-wrap">
-  <table class="sc-table" id="sc-edit-table">
-    <thead>
-      <tr>
-        <th class="player-col">Jugador</th>
-        ${Array.from({length:18},(_,i)=>`<th>${i+1}</th>`).join('')}
-        <th>Tot.</th><th>H1</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${players.map((p,pi)=>`<tr data-pi="${pi}">
-        <td class="player-name-cell">
-          <input type="text" value="${p.name}" oninput="scUpdateName(${pi},this.value)"
-            style="width:72px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:4px 6px;color:var(--txt);font-size:12px;font-family:var(--ff);outline:none">
-        </td>
-        ${p.holes.map((h,hi)=>`<td><input type="number" min="1" max="20" value="${h}" oninput="scUpdateHole(${pi},${hi},this.value)"
-          style="width:32px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:4px 2px;color:var(--txt);font-size:12px;text-align:center;font-family:var(--ff);font-weight:700;outline:none"></td>`).join('')}
-        <td class="total-cell" id="sc-total-${pi}">${p.holes.reduce((a,b)=>a+b,0)}</td>
-        <td><input type="number" min="0" max="18" value="${p.hio||0}" oninput="scUpdateHio(${pi},this.value)"
-          style="width:32px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;padding:4px 2px;color:var(--txt);font-size:12px;text-align:center;font-family:var(--ff);font-weight:700;outline:none"></td>
-      </tr>`).join('')}
-    </tbody>
-  </table></div>
-  <button class="ai-confirm-btn" onclick="confirmScorecard()">✅ Guardar marcador</button>
-  <button class="btn-sec" style="margin-top:6px" onclick="document.getElementById('ai-preview').classList.remove('show')">Cancelar</button>`;
-  window._scData={players:JSON.parse(JSON.stringify(players)),par};
-}
-
-window.scUpdateName=function(pi,val){window._scData.players[pi].name=val;};
-window.scUpdateHole=function(pi,hi,val){
-  const v=parseInt(val)||1;
-  window._scData.players[pi].holes[hi]=v;
-  const total=window._scData.players[pi].holes.reduce((a,b)=>a+b,0);
-  window._scData.players[pi].shots=total;
-  const el=document.getElementById('sc-total-'+pi);
-  if(el)el.textContent=total;
-};
-window.scUpdateHio=function(pi,val){window._scData.players[pi].hio=parseInt(val)||0;};
-
-window.confirmScorecard=async function(){
-  const {players}=window._scData;
-  const g=games.find(x=>x.id===currentGameId);
-  if(!g)return;
-  const updatedPlayers=[...(g.players||[])];
-  for(const p of players){
-    if(!p.name)continue;
-    const total=p.holes.reduce((a,b)=>a+b,0);
-    const entry={name:p.name,shots:total,hio:p.hio||0,holes:p.holes};
-    const ei=updatedPlayers.findIndex(x=>x.name.toLowerCase()===p.name.toLowerCase());
-    if(ei>=0)updatedPlayers[ei]=entry;
-    else updatedPlayers.push(entry);
-  }
-  // Upload image to Cloudinary if available
-  let scorecardUrl=null;
-  if(window._lastScanFile){
-    try{
-      const formData=new FormData();
-      formData.append('file',window._lastScanFile);
-      formData.append('upload_preset','walkgolf_unsigned');
-      const res=await fetch('https://api.cloudinary.com/v1_1/dweegu610/image/upload',{method:'POST',body:formData});
-      const data=await res.json();
-      scorecardUrl=data.secure_url||null;
-    }catch(e){console.warn('Cloudinary upload failed:',e);}
-  }
-  const updateData={players:updatedPlayers};
-  if(scorecardUrl)updateData.scorecardUrl=scorecardUrl;
-  await updateDoc(doc(db,'games',currentGameId),updateData);
-  const idx=games.findIndex(x=>x.id===currentGameId);
-  const updated={...g,players:updatedPlayers,...(scorecardUrl?{scorecardUrl}:{})};
-  if(idx>=0)games[idx]=updated;
-  document.getElementById('ai-preview').classList.remove('show');
-  refreshDetail(updated);
-  renderRanking();renderWinners();
-  toast('✨ Marcador guardado con '+players.length+' jugador'+(players.length!==1?'es':''));
-  window._lastScanDataURL=null;window._lastScanFile=null;
-};
-
-window.openLightbox=function(src){
-  const lb=document.createElement('div');
-  lb.className='lightbox';
-  lb.innerHTML='<button class="lightbox-close" onclick="this.parentElement.remove()">✕</button><img src="'+src+'">';
-  lb.addEventListener('click',e=>{if(e.target===lb)lb.remove();});
-  document.body.appendChild(lb);
-};
 
 window.addPlayer=async function(){
   const g=games.find(x=>x.id===currentGameId);
